@@ -1,0 +1,206 @@
+.trader-request-wrapper {
+    margin: 40px auto;
+    padding: 20px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 850px;
+    border-radius: 4px;
+    box-shadow: 0 0 10px #00000050;
+}
+.trader-req-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 50px;
+    text-align: center;
+}
+.trader-req-user-wrapper {
+    margin: 60px 0;
+    border: 1px solid #ccc;
+    position: relative;
+    padding-top: 30px;
+}
+.trader-req-icon-wrapper {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5rem;
+    width: 4.5rem;
+    height: 4.5rem;
+    line-height: 4.5rem;
+    text-align: center;
+    top: -2rem;
+    left: 50%;
+    transform: translate(-50%, 0);
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 2px 2px #00000025;
+    color: #333;
+}
+.trader-req-s-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.trader-req-s-row div:first-child {
+    color: #777;
+    font-weight: 400;
+}
+.trader-req-s-docs-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+.trader-req-s-docs-wrap a {
+    flex-shrink: 1;
+}
+.trader-req-s-docs-wrap img {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+.req-acc-rej-wrapper {
+    margin: 0 10px;
+    display: flex;
+    justify-content: space-between;
+}
+.req-acc-rej-wrapper button {
+    border: 0;
+    padding: 15px 20px;
+    border-radius: 4px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #fff;
+}
+.req-acc-rej-wrapper button:hover {
+    opacity: 0.8;
+}
+.req-acc-rej-wrapper .accept {
+    background: var(--light-green);
+}
+.req-acc-rej-wrapper .reject {
+    background: var(--my-red);
+}
+.prdo-we-nor {
+    font-weight: 400;
+}
+.trader-req-s-row-more {
+    display: flex;
+    justify-content: space-between;
+    margin: 30px 10px 10px 10px;
+    font-size: 1.1rem;
+    color: #777;
+}
+
+
+
+
+
+
+
+
+/* Add shop */
+.add-shop-inpt-div-wrapper {
+    display: flex;
+    width: 100%;
+    margin-top: 10px;
+    padding: 15px;
+    box-sizing: border-box;
+    justify-content: space-between;
+    align-items: center;
+}
+.add-shop-form-wrapper {
+    margin-bottom: 20px;
+}
+.add-shop-inpt-wrapper {
+    width: 100%;
+    max-width: 320px;
+}
+.add-shop-label {
+    width: 120px;
+    padding-right: 10px;
+}
+.add-shop-inpt {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    outline: none;
+}
+.add-shop-btm-space {
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.add-shop-form-btn-wrapper {
+    margin: 20px 0;
+    display: flex;
+    justify-content: end;
+}
+.add-shop-add-btn, .add-shop-title-btn, .add-shop-delete-btn {
+    border: 0;
+    background: var(--light-green);
+    width: 100px;
+    height: 35px;
+    line-height: 35px;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+}
+.add-shop-delete-btn {
+    background-color: var(--my-red);
+    margin-left: 20px;
+}
+.add-shop-title-wrapper {
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+}
+.add-shop-title-btn {
+    background-color: var(--dark-green);
+    width: 120px;
+    height: 45px;
+    line-height: 45px;
+}
+.add-shop-title-btn .iconify {
+    font-size: 1.4rem;
+    vertical-align: sub;
+    font-weight: 600;
+}
+.add-shop-add-btn:hover, .add-shop-delete-btn:hover, .add-shop-title-btn:hover {
+    opacity: 0.9;
+    color: #fff;
+}
+.add-shop-add-btn.disabled, .add-shop-delete-btn.disabled {
+    opacity: 0.7;
+    pointer-events: none;
+    cursor: default;
+}
+
+/**Shops */
+.shops-row-wrap {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 1.1rem;
+}
+.shop-r-key {
+    color: #555;
+    font-size: 2rem;
+    font-weight: bold;
+}
+.show-row-btn-wrap {
+    display: flex;
+    margin: 10px 0;
+    padding: 10px;
+    justify-content: flex-end;
+}

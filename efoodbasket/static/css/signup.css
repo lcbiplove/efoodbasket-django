@@ -1,0 +1,62 @@
+.signup-outer-wrapper {
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 860px;
+    margin: 60px auto;
+    padding: 15px;
+}
+.signup-wrapper {
+    display: flex;
+    width: 100%;
+    box-shadow: 0px 4px 5px 3px #00000040;
+}
+.signup-side-banner {
+    width: 180px;
+    background: url(../images/signup-1-banner.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+.signup-trader-side-banner {
+    width: 180px;
+    background: url(../images/signup-2-banner.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+.signup-container {
+    width: calc(100% - 180px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+
+
+
+@media screen and (max-width: 620px) {
+    .signup-trader-side-banner {
+        width: 0;
+        display: none;
+    }
+    .signup-side-banner {
+        width: 0;
+        display: none;
+    }
+    .signup-container {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .signup-wrapper {
+        box-shadow: none;
+    }
+    .signup-outer-wrapper {
+        padding: 0;
+    }
+}

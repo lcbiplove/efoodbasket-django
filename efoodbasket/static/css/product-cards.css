@@ -1,0 +1,231 @@
+.card-row {
+    margin: 0 -20px;
+    display: flex;
+    flex-wrap: wrap;
+}
+.card-col {
+    float: left;
+    width: 25%;
+    box-sizing: border-box;
+    padding: 0 20px;
+    margin-top: 20px;
+}
+.card-col-2 {
+    float: left;
+    width: 50%;
+    box-sizing: border-box;
+    padding: 0 20px;
+    margin-top: 20px;
+}
+.card {
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    top: 0;
+    position: relative;
+    transition: all 0.3s;
+    box-shadow: 0 0 4px 0 #00000050;
+}
+.card:hover {
+    top: -10px;
+    box-shadow: 0 4px 20px 0 #00000025;
+}
+
+/* Crop with css */
+.card-img-wrapper a {
+    overflow: hidden;
+    position: relative;
+    height: 260px;
+    max-width: 500px;
+    width: 100%;
+    display: inline-block;
+}
+.card-img {
+    position: absolute;
+    width: auto;
+    height: 100%;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+}
+/* .card-img {
+    border-radius: 15px;
+    width: 100%;
+    background-color: #eee;
+} */
+.card-body {
+    padding: 10px 0;
+}
+.card-title {
+    font-size: 1rem;
+    font-weight: 600;
+}
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.card-price {
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.card-cart {
+    cursor: pointer;
+    font-size: 2.2rem;
+    display: flex;
+    color: #777;
+    align-items: center;
+    border: 0;
+    background-color: transparent;
+    padding: 5px;
+}
+.card-cart.wishlist-button {
+    font-size: 1.6rem;
+    margin-right: -3px;
+}
+.card-cart:hover {
+    color: #000;
+}
+.card-cart span {
+    display: inline-block;
+    width: 1px;
+    margin: 0 8px;
+    height: 25px;
+    background-color: #999;
+}
+
+
+/* Big cards */
+.card-col-big {
+    float: left;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 20px;
+    margin-top: 20px;
+}
+.card-big {
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    top: 0;
+    position: relative;
+    transition: all 0.3s;
+    box-shadow: 0 0 4px 0 #00000050;
+    display: flex;
+    position: relative;
+}
+.card-big:hover {
+    top: -10px;
+    box-shadow: 0 4px 20px 0 #00000025;
+}
+.card-big .card-img-wrapper a {
+    overflow: hidden;
+    position: relative;
+    height: auto;
+}
+.card-big-img {
+    border-radius: 15px;
+    max-width: 225px;
+    width: 100%;
+    background-color: #eee;
+}
+.card-big-body {
+    padding-left: 10px;
+    flex-shrink: 0;
+    width: calc(100% - 225px);
+}
+.card-big-title {
+    font-size: 1.3rem;
+    text-transform: capitalize;
+    font-weight: 600;
+}
+.card-big-star-price {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+.card-big-price {
+    margin-left: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.card-key-value-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+.card-key-value-row {
+    display: flex;
+    margin-bottom: 10px;
+    color: #777;
+}
+.card-key {
+    width: 100px;
+    padding-right: 10px;
+    box-sizing: border-box;
+}
+.card-big-links {
+    float: right;
+    display: flex;
+    margin-top: -20px;
+}
+.card-big-links .iconify {
+    font-size: 1.5rem;
+}
+.card-big-links .cart-- {
+    font-size: 2rem;
+}
+
+
+
+
+
+
+
+@media screen and (max-width: 768px) {
+    .card-col {
+        width: 50%;
+    }
+    .card-col-2 {
+        width: 100%;
+    }
+}
+@media screen and (max-width: 620px) {
+    .card-col-2 {
+        width: 50%;
+    }
+    .card-big-img {
+        border-radius: 15px;
+        max-width: 125px;
+        background-color: #eee;
+    }
+    .card-big-body {
+        width: calc(100% - 125px);
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .card-col {
+        width: 100%;
+    }
+    .card-col-2 {
+        width: 100%;
+    }
+    .card-big-price {
+        margin-left: 0;
+    }
+    .card-key {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    
+}

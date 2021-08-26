@@ -1,0 +1,91 @@
+.carousel-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    overflow: hidden;
+    font-size: 12px;
+}
+.carousel-image-wrapper {
+    margin: 0;
+    white-space: nowrap;
+    letter-spacing: -4px;
+}
+.carousel-container img {
+    width: 100%;
+}
+/* Style for previous and next buttons */
+.carousel-controls .btn {
+    color: #fff;
+    border: 0;
+    position: absolute;
+    top: 50%;
+    height: 4.2rem;
+    width: 4.2rem;
+    cursor: pointer;
+    border-radius: 50%;
+    transform: translate(0, -50%);
+    z-index: 1;
+}
+.carousel-controls .btn:hover .iconify {
+    filter: drop-shadow(0 4px 4px #000000);
+}
+.carousel-controls .btn .iconify {
+    filter: drop-shadow(0 4px 4px #00000050);
+}
+.carousel-controls .btn:first-child{
+    left: -15px;
+}
+.carousel-controls .btn:last-child{
+    right: -15px;
+}
+
+/* Style for dots (indicators) */
+.carousel-indicators {
+    position: absolute;
+    left: 0;
+    bottom: 15px;
+    right: 0;
+    text-align: center;
+}
+.carousel-indicators>span {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    border-radius: 50%;
+    margin-right: 5px;
+    background-color: #fff;
+    box-shadow: 0 4px 4px 0 #00000050;
+}
+.carousel-indicators>span.active, .carousel-indicators>span:hover {
+    background-color: #000;
+}
+
+
+
+@media screen and (max-width: 760px) {
+    .carousel-controls .btn {
+        height: 3.5rem;
+        width: 3.5rem;
+    }
+    .carousel-indicators {
+        bottom: 5px;
+    }
+    .carousel-indicators>span {
+        width: 16px;
+        height: 16px;
+        box-shadow: 0 2px 2px 0 #00000050;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .carousel-indicators>span {
+        width: 12px;
+        height: 12px;
+        box-shadow: 0 2px 2px 0 #00000050;
+    }
+    .carousel-controls .btn {
+        height: 3rem;
+        width: 3rem;
+    }
+}

@@ -1,0 +1,83 @@
+/* https://css-tricks.com/five-methods-for-five-star-ratings/ */
+:root {
+    --star-bg-color: #c4c4c4;
+    --star-color: #FFA41C;
+}
+.md-stars {
+    --percent: calc(var(--rating) / 5 * 100%);
+    display: inline-block;
+    font-size: 24px;
+    font-family: Times;
+    line-height: 1;
+}
+.md-stars::before {
+    content: '★★★★★';
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, var(--star-color) var(--percent), var(--star-bg-color) var(--percent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.sm-stars {
+    --percent: calc(var(--rating) / 5 * 100%);
+    display: inline-block;
+    font-size: 18px;
+    font-family: Times;
+    line-height: 1;
+}
+.sm-stars::before {
+    content: '★★★★★';
+    letter-spacing: 0;
+    background: linear-gradient(90deg, var(--star-color) var(--percent), var(--star-bg-color) var(--percent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.lg-stars {
+    --percent: calc(var(--rating) / 5 * 100%);
+    display: inline-block;
+    font-size: 34px;
+    font-family: Times;
+    line-height: 1;
+}
+.lg-stars::before {
+    content: '★★★★★';
+    letter-spacing: 3px;
+    background: linear-gradient(90deg, var(--star-color) var(--percent), var(--star-bg-color) var(--percent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.xl-stars {
+    --percent: calc(var(--rating) / 5 * 100%);
+    display: inline-block;
+    font-size: 42px;
+    font-family: Times;
+    line-height: 1;
+}
+.xl-stars::before {
+    content: '★★★★★';
+    letter-spacing: 0px;
+    background: linear-gradient(90deg, var(--star-color) var(--percent), var(--star-bg-color) var(--percent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+@media screen and (max-width: 480px) {
+    .md-stars {
+        --percent: calc(var(--rating) / 5 * 100%);
+        display: inline-block;
+        font-size: 18px;
+        font-family: Times;
+        line-height: 1;
+   }
+    .md-stars::before {
+        content: '★★★★★';
+        letter-spacing: 0;
+        background: linear-gradient(90deg, var(--star-color) var(--percent), var(--star-bg-color) var(--percent));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+   }
+}

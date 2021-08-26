@@ -1,0 +1,170 @@
+.main-search-wrapper {
+    padding: 40px 20px;
+    width: 100%;
+    max-width: 1100px;
+    margin: auto auto;
+    box-sizing: border-box;
+}
+.search-results {
+    font-size: 1.7rem;
+    font-weight: 600;
+}
+.search-headers {
+    margin: 30px 0;
+    padding: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #d9d9d9;
+}
+.sortBy {
+    padding: 10px 15px;
+    font-size: 1.05rem;
+    background-color: #fff;
+    cursor: pointer;
+    border: 1px solid #999;
+    color: #333;
+    border-radius: 3px;
+    margin-left: 10px;
+}
+.results-number {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #666;
+}
+.search-body {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+}
+.filters-wrapper {
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 240px;
+    background-color: #fbfafa;
+    padding: 15px;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+.filter-row {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+.filter-heading {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+.filter-stars-row {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+.filter-form .checkbox {
+    cursor: pointer;
+    margin-right: 10px;
+}
+.and-up {
+    margin-left: 5px;
+}
+.myRangeSlider {
+    margin: 30px 0;
+}
+.min-max-wrapper {
+    display: flex;
+    justify-content: space-between;
+}
+.minMaxPrice {
+    width: 100%;
+    max-width: 80px;
+    box-sizing: border-box;
+    padding: 8px;
+    border-radius: 30px;
+    border: 1px solid #ccc;
+    background-color: transparent;
+    text-align: center;
+    outline: none;
+}
+.filter-btn, .filter-reset-btn {
+    display: inline-block;
+    margin-right: 10px;
+    padding: 10px 20px;
+    background-color: var(--light-green);
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    margin-top: 20px;
+}
+.filter-reset-btn {
+    background-color: transparent;
+    color: #777;
+}
+.results-wrapper {
+    margin-top: -20px;
+    margin-left: 30px;
+    width: 100%;
+}
+.card-big-links .iconify.big-btn {
+    font-size: 2.5rem;
+}
+/* Manage product */
+.add-product {
+    display: inline-block;
+    background-color: var(--light-green);
+    padding: 15px 20px;
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 600;
+}
+.add-product:hover {
+    color: #fff;
+    opacity: 0.8;
+}
+.filter-row-rating {
+    border-bottom: 1px solid transparent;
+}
+.filter-row-rating.active, .filter-row-rating:hover {
+    border-bottom: 1px dashed var(--star-color);
+    color: #000;
+}
+
+
+
+@media screen and (max-width: 800px) {
+    .search-body {
+        flex-wrap: wrap;
+    }
+    .filters-wrapper {
+        width: 100%;
+        max-width: 100%;
+    }
+    .results-wrapper {
+        margin-top: 0;
+        margin-left: 0;
+        flex-shrink: 0;
+    }
+}
+
+@media screen and (max-width: 620px) {
+    .search-body {
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .filters-wrapper {
+        width: 100%;
+        max-width: 100%;
+    }
+    .results-wrapper {
+        margin-top: 0;
+        margin-left: 0;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .sortBy {
+        padding: 5px;
+    }
+}

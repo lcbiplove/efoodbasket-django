@@ -1,0 +1,89 @@
+.notification-wrapper {
+    max-width: 768px;
+    width: 100%;
+    padding: 15px;
+    box-sizing: border-box;
+    margin: 40px auto;
+}
+.notif-title-wrapper {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+}
+.notif-title {
+    font-size: 1.1rem;
+}
+.notif-row {
+    width: 100%;
+    display: flex;
+    padding: 15px 10px;
+    box-sizing: border-box;
+}
+.notif-row:hover, .notif-not-seen {
+    color: #333;
+    background-color: #f3f3f3;
+}
+.notif-not-link {
+    cursor: auto;
+}
+.no-notif {
+    margin: 60px auto;
+    text-align: center;
+    color: #777;
+    font-weight: 600;
+}
+.not-link:hover {
+    background-color: #fff;
+    color: #333;
+}
+.notif-img-wrapper {
+    width: 75px;
+    height: 75px;
+}
+.notif-img {
+    width: 100%;
+    border-radius: 50%;
+}
+.notif-body-wrapper {
+    padding-left: 10px;
+}
+.notif-body-ttl {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+.notif-text {
+    margin: 8px 0;
+    color: #555;
+}
+.order-details-item {
+    margin: 5px 0;
+}
+.notif-footer {
+    font-size: 0.9rem;
+}
+.notif-by {
+    font-weight: 600;
+}
+.notif-date {
+    margin-left: 25px;
+    position: relative;
+    color: #777;
+}
+.order-date {
+    margin-left: 15px;
+    position: relative;
+    color: #777;
+}
+.order-date::before, .notif-date::before {
+    content: '';
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: #ccc;
+    position: absolute;
+    top: 50%;
+    left: -15px;
+    transform: translate(0, -50%);
+}

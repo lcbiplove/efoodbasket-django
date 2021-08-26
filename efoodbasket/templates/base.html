@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <title> {% block title %}{% endblock %} </title>
+    <link rel="stylesheet" type="text/css" href="/public/css/styles.css">
+    {% block titleLinks %}{% endblock %}
+    <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
+    {% if not user %}
+    <script src="/public/js/cart-localstorage.min.js"></script>
+    <script src="/public/js/header-cart-local.js"></script>
+    {% endif %}
+</head>
+<body>
+    <header>
+        <nav>
+            <div id="menu" class="menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="logo-wrapper">
+                <a href="/">
+                    <img class="logo-img" src="/public/images/efoodbasket-name.png" alt="eFoodBasket-logo">
+                </a>
+            </div>
+            <div class="search-box-wrapper">
+                <form class="search-form" action="/search/" method="get">
+                    <div class="search-categories">
+                        <select class="category-select" name="searchBy">
+                            <option value="">All categories</option>
+                            {% for category in categories %}
+                                <option value="{{category.CATEGORY_ID}}" {% if selected_category == category.CATEGORY_ID %}selected{% endif %}>{{category.CATEGORY_NAME}}</option>
+                            {% endfor %}
+                        </select>
+                        <span class="iconify select-arrow" data-icon="ic:round-keyboard-arrow-down" data-inline="false"></span>
+                    </div>
+                    <div class="inp-select-line"></div>
+                    <div class="search-input-wrapper">
+                        <input class="search-inpt" name="q" type="text" value="{{search_key}}" placeholder="Search Products, categories...">
+                    </div>
+                    <button class="search-btn" type="submit">
+                        <span class="iconify" data-icon="la:search" data-inline="false"></span>
+                    </button>
+                </form>
+            </div>
+            <div class="cart-account-wrapper">
+                <div class="cart-account-item account-nav-link">
+                    <span class="iconify account" data-icon="line-md:account" data-inline="false"></span>
+                    <span class="cart-icon-title">Account</span>
+                    <span class="iconify down-arrow" data-icon="ant-design:caret-down-outlined" data-inline="false"></span>
+                    <div class="account-nav-links">
+                        {% if not is_authenticated %}
+                        <a href="/login/">
+                            <span class="iconify" data-icon="clarity:login-line" data-inline="false"></span>
+                            <span>Login</span>
+                        </a>
+                        <a href="/signup/">
+                            <span class="iconify" data-icon="line-md:account-add" data-inline="false"></span>
+                            <span>Sign up</span>
+                        </a>
+                        {% endif %}
+
+                        {% if is_authenticated %}
+                        <a href="/manage-account/">
+                            <span class="iconify" data-icon="line-md:account" data-inline="false"></span>
+                            <span>Manage Account</span>
+                        </a>
+                        {% if is_admin %}
+                            <a href="/my-dashboard/">
+                                <span class="iconify" data-icon="ant-design:dashboard-outlined" data-inline="false"></span>
+                                <span>Dashboard</span>
+                            </a>
+                        {% endif %}
+                        {% if is_trader %}
+                        <a href="/my-dashboard/">
+                            <span class="iconify" data-icon="ant-design:dashboard-outlined" data-inline="false"></span>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="/trader/manage-products/">
+                            <span class="iconify" data-icon="ic:baseline-manage-search" data-inline="false"></span>
+                            <span>Manage Products</span>
+                        </a>
+                        {% elseif is_customer %}
+                        <a href="/orders/">
+                            <span class="iconify" data-icon="la:box" data-inline="false"></span>
+                            <span>Orders</span>
+                        </a>
+                        <a href="/wishlists/">
+                            <span class="iconify" data-icon="el:heart-empty" data-inline="false"></span>
+                            <span>Wishlist</span>
+                        </a>
+                        {% endif %}
+                        
+                        <a href="/notifications/">
+                            <span class="link-icon-count-wrapper">
+                                <span class="link-icon-count"> {% if notif_count > 9 %}9+{% else %}{{notif_count}}{% endif %} </span>
+                                <span class="iconify" data-icon="bi:bell" data-inline="false"></span>
+                            </span>
+                            <span>Notifications</span>
+                        </a>
+                        <form action="/logout/" method="POST" class="d-flex">
+                            <input name="val" type="hidden" value="val">
+                            <button type="submit" name="logout" value="logout">
+                                <span class="iconify" data-icon="carbon:logout" data-inline="false"></span>
+                                <span>Logout</span>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="cart-acc-separ"></div>
+                {% if is_admin %}
+                    <div class="cart-account-item not-link">
+                        <span class="cart-icon-wrapper">
+                        </span>
+                        <span>Admin</span>
+                    </div>
+                {% elseif is_trader %}
+                    <div class="cart-account-item not-link">
+                        <span class="cart-icon-wrapper">
+                        </span>
+                        <span>Trader</span>
+                    </div>
+                {% else %}
+                    <a href="/cart/" class="cart-account-item">
+                        <span class="cart-icon-wrapper">
+                            <span class="iconify" data-icon="bx:bx-basket" data-inline="false"></span>
+                            <span class="cart-count main-cart-count">{{ cart.cartItemsCount }}</span>
+                        </span>
+                        <span class="cart-icon-title">Cart</span>
+                    </a>
+                {% endif %}
+            </div>
+            <div class="cart-search-wrapper">
+                <div id="mbl-search" class="cart-account-item">
+                    <span class="iconify account" data-icon="bi:search" data-inline="false"></span>
+                </div>
+                {% if is_admin %}
+                    <div class="cart-account-item not-link">
+                        <span class="cart-icon-wrapper">
+                        </span>
+                        <span class="cart-icon-title">Admin</span>
+                    </div>
+                {% elseif is_trader %}
+                    <div class="cart-account-item not-link">
+                        <span class="cart-icon-wrapper">
+                        </span>
+                        <span class="cart-icon-title">Trader</span>
+                    </div>
+                {% else %}
+                    <a href="/cart/" class="cart-account-item  ml-5">
+                        <span class="cart-icon-wrapper">
+                            <span class="iconify" data-icon="bx:bx-basket" data-inline="false"></span>
+                            <span class="cart-count main-cart-count">{{ cart.cartItemsCount }}</span>
+                        </span>
+                    </a>
+                {% endif %}
+                
+            </div>
+        </nav>
+        <div id="overlay"></div>
+        <div id="menu-container" class="menu-container">
+            <div class="menu-content">
+                {% if not is_authenticated %}
+                    <a class="menu-link" href="/login/">
+                        <span>Login</span>
+                        <span class="iconify menu-link-icon" data-icon="clarity:login-line" data-inline="false"></span>
+                    </a>
+                    <a class="menu-link" href="/signup/">
+                        <span>Sign up</span>
+                        <span class="iconify menu-link-icon" data-icon="line-md:account-add" data-inline="false"></span>
+                    </a>
+                {% endif %}
+                
+                {% if is_authenticated %}
+                    <a class="menu-link" href="/">
+                        <span>Home</span>
+                        <span class="iconify menu-link-icon" data-icon="ant-design:home-outlined" data-inline="false"></span>
+                    </a>
+                    <a class="menu-link" href="/manage-account/">
+                        <span>Account</span>
+                        <span class="iconify menu-link-icon" data-icon="line-md:account" data-inline="false"></span>
+                    </a>
+                    {% if is_admin %}
+                    <a class="menu-link" href="/my-dashboard/">
+                        <span>Dashboard</span>
+                        <span class="iconify menu-link-icon" data-icon="ant-design:dashboard-outlined" data-inline="false"></span>
+                    </a>
+                    {% endif %}
+                    {% if is_trader %}
+                    a class="menu-link" href="/my-dashboard/">
+                        <span>Dashboard</span>
+                        <span class="iconify menu-link-icon" data-icon="ant-design:dashboard-outlined" data-inline="false"></span>
+                    </a>
+                    <a class="menu-link" href="/manage-products/">
+                        <span>Manage Products</span>
+                        <span class="iconify menu-link-icon" data-icon="line-md:account" data-inline="false"></span>
+                    </a>
+                    {% endif %}
+                    <a class="menu-link" href="/notifications/">
+                        <span>Notifications</span>
+                        <span class="link-icon-count-wrapper">
+                            <span class="link-icon-count" style="right: -12px;"> {% if notif_count > 9 %}9+{% else %}{{notif_count}}{% endif %} </span>
+                            <span class="iconify menu-link-icon" data-icon="bi:bell" data-inline="false"></span>
+                        </span>
+                    </a>
+                    {% if is_customer %}
+                    <a class="menu-link" href="/orders/">
+                        <span>Orders</span>
+                        <span class="iconify menu-link-icon" data-icon="la:box" data-inline="false"></span>
+                    </a>
+                    <a class="menu-link" href="/wishlists/">
+                        <span>Wishlist</span>
+                        <span class="iconify menu-link-icon" data-icon="el:heart-empty" data-inline="false"></span>
+                    </a>
+                    {% endif %}
+                    <form action="/logout/" method="POST" class="d-flex">
+                        <input name="val" type="hidden" value="val">
+                        <button class="menu-link" type="submit" name="logout" value="logout">
+                            <span>Logout</span>
+                            <span class="iconify menu-link-icon" data-icon="carbon:logout" data-inline="false"></span>
+                        </button>
+                    </form>
+                {% endif %}
+                
+            </div>
+        </div>
+        <div id="mbl-search-container" class="mbl-search-container"></div>
+    </header>
+
+    <main>
+        {% if cookieMessage.message %}
+            <div id="cookie-mssg-box" class="cookie-mssg-wrapper show-for-{{ cookieMessage.type }}">
+                <div class="cookie-indicator {{ cookieMessage.type }}"></div>
+                <div class="cookie-mssg">
+                    {% autoescape %}
+                        {{ cookieMessage.message|raw }}
+                    {% endautoescape %}
+                </div>
+                <div id="cookie-box-close" class="cookie-close"></div>
+            </div>
+        {% endif %}
+        
+        {% block main %}{% endblock %}
+    </main>
+
+    <footer>
+        <div class="footer-wrapper max-width-wrapper">
+            <div class="footer-row">
+                <div class="footer-col">
+                    <div class="footer-title">Get in touch</div>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">About Us</a>
+                        <a href="#" class="footer-link">Careers</a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <div class="footer-title">Connections</div>
+                    <div class="footer-connect-links">
+                        <a href="#" class="footer-connect-link">
+                            <span class="iconify" data-icon="logos:facebook" data-inline="false"></span>
+                        </a>
+                        <a href="#" class="footer-connect-link">
+                            <span class="iconify" data-icon="logos:youtube-icon" data-inline="false"></span>
+                        </a>
+                        <a href="#" class="footer-connect-link">
+                            <span class="iconify" data-icon="logos:twitter" data-inline="false"></span>
+                        </a>
+                        <a href="#" class="footer-connect-link">
+                            <span class="iconify" data-icon="logos:linkedin-icon" data-inline="false"></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <div class="footer-title">Earnings</div>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Advertise your product</a>
+                        <a href="#" class="footer-link">Sell on Market</a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <div class="footer-title">Account</div>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Your account</a>
+                        <a href="#" class="footer-link">100% purchase protection</a>
+                        <a href="#" class="footer-link">Chat with us</a>
+                        <a href="#" class="footer-link">Help</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                Copyright &copy; {{ "now"|date("Y") }} e-food basket
+            </div>
+        </div>
+
+    </footer>
+
+    <script src="/public/js/header.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

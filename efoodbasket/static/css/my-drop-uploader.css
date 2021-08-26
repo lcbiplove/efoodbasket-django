@@ -1,0 +1,63 @@
+:root {
+  --my-blue: #2abbe8;
+}
+#drop-area {
+  border: 1px solid #999;
+  border-radius: 5px;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+#drop-area.highlight {
+  border-color: var(--light-green);
+}
+.cloud-img-wrapper {
+  display: flex;
+  justify-content: center;
+}
+.cloud-upload-img {
+  max-width: 100px;
+  width: 100%;
+}
+.my-form {
+  margin-bottom: 10px;
+}
+#gallery {
+  margin-top: 10px;
+}
+#gallery img {
+  width: 150px;
+  margin-bottom: 10px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+.button {
+  display: inline-block;
+  padding: 10px;
+  background: #ccc;
+  cursor: pointer;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+.button:hover {
+  background: #ddd;
+}
+#fileElem {
+  display: none;
+}
+.drop-tips {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+}
+.browse-files {
+  color: var(--my-blue) !important;
+  cursor: pointer;
+  display: inline-block !important;
+  text-decoration: underline;
+  padding: 10px 5px;
+}
+.upload-preview-img {
+  width: 100%;
+  max-width: 150px;
+}

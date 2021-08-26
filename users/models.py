@@ -31,7 +31,6 @@ class UserManager(BaseUserManager):
             fullname=fullname,
             contact=contact,
         )
-        user.is_admin = True
         user.user_role = User.USER_IS_ADMIN
         user.save(using=self._db)
         return user
@@ -55,6 +54,7 @@ class User(AbstractBaseUser):
     otp = models.IntegerField(null=True)
     token = models.CharField(null=True, max_length=48)
     otp_last_date = models.DateTimeField(null=True)
+    is_active = models.BooleanField(default=True)
 
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
@@ -62,6 +62,20 @@ class User(AbstractBaseUser):
 
     objects = UserManager()
 
+    def __str__(self) -> str:
+        return f"{self.email}"
+
+    def has_perm(self, perm, obj=None):
+        "Does the user have a specific permission?"
+        return True
+
+    def has_module_perms(self, app_label):
+        "Does the user have permissions to view the app `app_label`?"
+        return True
+
+    @property
+    def is_staff(self):
+        return self.USER_IS_ADMIN == self.user_role
 
 class Trader(models.Model):
     APPROVAL_IS_SUCCESS = 'Y'
@@ -79,3 +93,6 @@ class Trader(models.Model):
     documents_path = models.TextField(max_length=1000)
     is_approved = models.CharField(default=APPROVAL_IS_PENDING, choices=APPROVAL_CHOICES, max_length=1)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return f"{self.user.email}"
