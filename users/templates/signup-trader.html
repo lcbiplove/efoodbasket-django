@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Signup | efoodbasket{% endblock %}
+
+{% block titleLinks %}
+    <link rel="stylesheet" href="/public/css/my-drop-uploader.css">
+    <link rel="stylesheet" type="text/css" href="/public/css/form.css">
+    <link rel="stylesheet" type="text/css" href="/public/css/signup.css">
+{% endblock %}
+
+{% block main %}
+    <div class="max-width-wrapper">
+        <div class="signup-outer-wrapper">
+            <div class="signup-wrapper">
+                <div class="signup-trader-side-banner">
+                </div>
+                <div class="signup-container">
+                    <div>
+                        <img src="/public/images/efoodbasket-name.png" class="login-logo" alt="">
+                    </div>
+                    <div class="form-wrapper">
+                        <form class="login-form" action="/signup-trader/" method="POST" enctype="multipart/form-data" >
+                            <div class="form-row">
+                                <div class="form-col-2">
+                                    <div class="inpt-wrapper">
+                                        <label for="fullNameId">Full Name</label>
+                                        <input id="fullNameId" type="text" name="fullname" placeholder="Your Name..." value="{{ valid_data.fullname }}">
+                                        <small class="red-text">{{ errors.fullname }}</small>
+                                    </div>
+                                </div>
+                                <div class="form-col-2">
+                                    <div class="inpt-wrapper">
+                                        <label for="addressId">Address</label>
+                                        <input id="addressId" type="text" name="address" placeholder="Your Address..." value="{{ valid_data.address }}">
+                                        <small class="red-text">{{ errors.address }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-col-2">
+                                    <div class="inpt-wrapper">
+                                        <label for="emailId">Email</label>
+                                        <input id="emailId" type="email" name="email" placeholder="Your Email..." value="{{ valid_data.email }}">
+                                        <small class="red-text">{{ errors.email }}</small>
+                                    </div>
+                                </div>
+                                <div class="form-col-2">
+                                    <div class="inpt-wrapper">
+                                        <label for="contactId">Contact</label>
+                                        <input id="contactId" type="text" name="contact" placeholder="Your Contact..." value="{{ valid_data.contact }}">
+                                        <small class="red-text">{{ errors.contact }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-col-2">
+                                    <div class="inpt-wrapper">
+                                        <label for="pan">PAN</label>
+                                        <input id="pan" type="text" name="pan" placeholder="Your PAN..." value="{{ valid_data.pan }}">
+                                        <small class="red-text">{{ errors.pan }}</small>
+                                    </div>
+                                </div>
+                                <div class="form-col-2">
+                                    <div class="inpt-wrapper">
+                                        <label for="typeId">Product Type</label>
+                                        <input id="typeId" type="text" name="type" placeholder="Your product type..." value="{{ valid_data.type }}">
+                                        <small class="red-text">{{ errors.type }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="inpt-wrapper">
+                                <label for="detailsId">Product Details</label>
+                                <textarea name="details" id="detailsId" placeholder="Decribe your product in few words...">{{ valid_data.details }}</textarea>
+                                <small class="red-text">{{ errors.details }}</small>
+                            </div>
+
+                            <div class="inpt-wrapper">
+                                <label >Documents</label>
+                                <div id="drop-area">
+                                    <div class="cloud-img-wrapper">
+                                        <img class="cloud-upload-img" src="/public/images/cloud-upload.svg" alt="Cloud-upload-icon">
+                                    </div>
+                                    <div class="drop-tips">
+                                        Drop files here or <label for="fileElem" class="browse-files">Browse</label>
+                                    </div>
+                                    <input type="file" id="fileElem" name="documents[]" accept="image/*" multiple>
+                                    <div id="gallery"></div>
+                                </div>
+                                <small class="red-text">{{ errors.documents }}</small>
+                            </div>
+
+                            <div class="inpt-wrapper">
+                                <input id="termsId" type="checkbox" name="terms" value="agreed" placeholder="Agree..." {% if valid_data.terms %}checked{% endif %}> I agree to terms and conditions
+                                <div>
+                                    <small class="red-text">{{ errors.terms }}</small>
+                                </div>
+                            </div>
+
+                            <div class="login-btn-wrapper">
+                                <button class="login-btn" type="submit">Signup</button>
+                            </div>
+                        </form>
+                        <div class="login-footer space-btwn">
+                            <div>
+                                <span>Already a user? </span>
+                                <a href="/login/" class="note-link-under">Login</a>
+                            </div>
+                            <div>
+                                <a href="/signup/" class="note-link-under">Signup as customer</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="/public/js/my-drop-uploader.js"></script>
+{% endblock %}
+
+
+    
+        
+
+    
+

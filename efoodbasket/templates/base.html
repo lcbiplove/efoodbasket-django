@@ -1,17 +1,18 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
     <title> {% block title %}{% endblock %} </title>
-    <link rel="stylesheet" type="text/css" href="/public/css/styles.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
     {% block titleLinks %}{% endblock %}
     <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
     {% if not user %}
-    <script src="/public/js/cart-localstorage.min.js"></script>
-    <script src="/public/js/header-cart-local.js"></script>
+        <script src="{% static 'js/cart-localstorage.min.js' %}"></script>
+        <script src="{% static 'js/header-cart-local.js' %}"></script>
     {% endif %}
 </head>
 <body>
@@ -24,7 +25,7 @@
             </div>
             <div class="logo-wrapper">
                 <a href="/">
-                    <img class="logo-img" src="/public/images/efoodbasket-name.png" alt="eFoodBasket-logo">
+                    <img class="logo-img" src="{% static 'images/efoodbasket-name.png' %}" alt="logo' %}">
                 </a>
             </div>
             <div class="search-box-wrapper">
@@ -84,7 +85,7 @@
                             <span class="iconify" data-icon="ic:baseline-manage-search" data-inline="false"></span>
                             <span>Manage Products</span>
                         </a>
-                        {% elseif is_customer %}
+                        {% elif is_customer %}
                         <a href="/orders/">
                             <span class="iconify" data-icon="la:box" data-inline="false"></span>
                             <span>Orders</span>
@@ -119,7 +120,7 @@
                         </span>
                         <span>Admin</span>
                     </div>
-                {% elseif is_trader %}
+                {% elif is_trader %}
                     <div class="cart-account-item not-link">
                         <span class="cart-icon-wrapper">
                         </span>
@@ -145,7 +146,7 @@
                         </span>
                         <span class="cart-icon-title">Admin</span>
                     </div>
-                {% elseif is_trader %}
+                {% elif is_trader %}
                     <div class="cart-account-item not-link">
                         <span class="cart-icon-wrapper">
                         </span>
@@ -226,23 +227,22 @@
                         </button>
                     </form>
                 {% endif %}
-                
             </div>
         </div>
         <div id="mbl-search-container" class="mbl-search-container"></div>
     </header>
 
     <main>
-        {% if cookieMessage.message %}
-            <div id="cookie-mssg-box" class="cookie-mssg-wrapper show-for-{{ cookieMessage.type }}">
-                <div class="cookie-indicator {{ cookieMessage.type }}"></div>
-                <div class="cookie-mssg">
-                    {% autoescape %}
-                        {{ cookieMessage.message|raw }}
-                    {% endautoescape %}
+        {% if messages %}
+            {% for message in messages %}
+                <div id="cookie-mssg-box" class="cookie-mssg-wrapper show-for-{{ message.tags }}">
+                    <div class="cookie-indicator {{ message.tags }}"></div>
+                    <div class="cookie-mssg">
+                        {{ message|safe }}
+                    </div>
+                    <div id="cookie-box-close" class="cookie-close"></div>
                 </div>
-                <div id="cookie-box-close" class="cookie-close"></div>
-            </div>
+            {% endfor %}
         {% endif %}
         
         {% block main %}{% endblock %}
@@ -293,13 +293,13 @@
                 </div>
             </div>
             <div class="footer-copyright">
-                Copyright &copy; {{ "now"|date("Y") }} e-food basket
+                Copyright &copy; {% now "Y" %} e-food basket
             </div>
         </div>
 
     </footer>
 
-    <script src="/public/js/header.js"></script>
+    <script src="{% static 'js/header.js' %}"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -1,8 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from random import randint
+from django.utils import timezone
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, fullname, contact, password=None):
+    def create_user(self, email, fullname, contact, address=None, password=None):
         """
         Creates and saves a User with the given email, date of
         birth and password.
@@ -17,6 +19,8 @@ class UserManager(BaseUserManager):
         )
 
         user.set_password(password)
+        user.otp = randint(100000, 999999)
+        user.otp_last_date = timezone.now()
         user.save(using=self._db)
         return user
 
@@ -32,6 +36,9 @@ class UserManager(BaseUserManager):
             contact=contact,
         )
         user.user_role = User.USER_IS_ADMIN
+        user.is_active = True
+        self.otp = randint(100000, 999999)
+        self.otp_last_date = timezone.now()
         user.save(using=self._db)
         return user
 
@@ -54,7 +61,7 @@ class User(AbstractBaseUser):
     otp = models.IntegerField(null=True)
     token = models.CharField(null=True, max_length=48)
     otp_last_date = models.DateTimeField(null=True)
-    is_active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
@@ -76,6 +83,20 @@ class User(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.USER_IS_ADMIN == self.user_role
+
+    @property
+    def valid_otp(self):
+        if self.otp_expired:
+            self.otp = randint(100000, 999999)
+            self.otp_last_date = timezone.now()
+            self.save()
+        return self.otp
+
+    @property
+    def otp_expired(self):
+        diff = timezone.now() - self.otp_last_date
+        return diff.seconds > 60*5
+
 
 class Trader(models.Model):
     APPROVAL_IS_SUCCESS = 'Y'

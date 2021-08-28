@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Signup | efoodbasket{% endblock %}
+
+{% block titleLinks %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/form.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/signup.css' %}">
+{% endblock %}
+
+{% block main %}
+    <div class="max-width-wrapper">
+        <div class="signup-outer-wrapper">
+            <div class="signup-wrapper">
+                <div class="signup-side-banner">
+                </div>
+                <div class="signup-container">
+                    <div>
+                        <img src="{% static 'images/efoodbasket-name.png' %}" class="login-logo" alt="eFoodBasket-logo">
+                    </div>
+                    <div class="form-wrapper">
+                        <form class="login-form" action="/signup/" method="POST" >
+                            {% csrf_token %}
+                            <div class="form-row">
+                                <div class="form-col-2">
+                                    <div class="inpt-wrapper">
+                                        <label for="fullNameId">Full Name</label>
+                                        <input id="fullNameId" type="text" name="fullname" placeholder="Your Name..." value="{{ valid_data.fullname }}" >
+                                        <small class="red-text">{{ errors.fullname }}</small>
+                                    </div>
+                                </div>
+                                <div class="form-col-2">
+                                    <div class="inpt-wrapper">
+                                        <label for="addressId">Address</label>
+                                        <input id="addressId" type="text" name="address" placeholder="Your Address..." value="{{ valid_data.address }}">
+                                        <small class="red-text">{{ errors.address }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-col-2">
+                                    <div class="inpt-wrapper">
+                                        <label for="emailId">Email</label>
+                                        <input id="emailId" type="email" name="email" placeholder="Your Email..." value="{{ valid_data.email }}">
+                                        <small class="red-text">{{ errors.email }}</small>
+                                    </div>
+                                </div>
+                                <div class="form-col-2">
+                                    <div class="inpt-wrapper">
+                                        <label for="contactId">Contact</label>
+                                        <input id="contactId" type="text" name="contact" placeholder="Your Contact..." value="{{ valid_data.contact }}">
+                                        <small class="red-text">{{ errors.contact }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-col-2">
+                                    <div class="inpt-wrapper">
+                                        <label for="passwordId">Password</label>
+                                        <input id="passwordId" type="password" name="password" placeholder="Your Password...">
+                                        <small class="red-text">{{ errors.password }}</small>
+                                    </div>
+                                </div>
+                                <div class="form-col-2">
+                                    <div class="inpt-wrapper">
+                                        <label for="confPassId">Confirm Password</label>
+                                        <input id="confPassId" type="password" name="confpass" placeholder="Confirm your password...">
+                                        <small class="red-text">{{ errors.confpass }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="inpt-wrapper">
+                                <input id="termsId" type="checkbox" name="terms" value="agreed" placeholder="Agree..." {% if valid_data.terms %}checked{% endif %}
+                                 > I agree to terms and conditions
+                                <div>
+                                    <small class="red-text">{{ errors.terms }}</small>
+                                </div>
+                            </div>
+
+                            <div class="login-btn-wrapper">
+                                <button class="login-btn" type="submit">Signup</button>
+                            </div>
+                        </form>
+                        <div class="login-footer space-btwn">
+                            <div>
+                                <span>Already a user? </span>
+                                <a href="/login/" class="note-link-under">Login</a>
+                            </div>
+                            <div>
+                                <a href="/signup-trader/" class="note-link-under">Signup as trader</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

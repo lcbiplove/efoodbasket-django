@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block titleLinks %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/stars.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/slider.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/product-cards.css' %}">
+{% endblock %}
+
+{% block main %}
+
+<div class="max-width-wrapper">
+    <div class="main-wrapper">
+        <div class="home-row-wrapper">
+            <div class="carousel-container">
+                <div id="first-slider" class="carousel-image-wrapper">
+                  <img src="{% static 'images/slider1.jpg' %}" alt="Banner" />
+                  <img src="{% static 'images/slider2.jpg' %}" alt="Banner" />
+                  <img src="{% static 'images/slider3.jpg' %}" alt="Banner" />
+                  <img src="{% static 'images/slider4.jpg' %}" alt="Banner" />
+                  <img src="{% static 'images/slider5.jpg' %}" alt="Banner" />
+                </div>
+            </div>  
+        </div>
+
+        <div class="home-row-wrapper">
+            <div class="home-row-title-wrapper">
+                <div class="home-row-title">Shop by Traders</div>
+            </div>
+            <div class="home-row-content">
+                <div class="shop-by-images-wrapper shop-img-side-marg">
+                    <div class="shop-by-images-container">
+                        <a class="shop-by-link" href="/trader/4/products/">
+                            <img class="shop-by-img" src="{% static 'images/butchers.jpg' %}" alt="buthers-img">
+                        </a>
+                        <a class="shop-by-link" href="/trader/6/products/">
+                            <img class="shop-by-img" src="{% static 'images/greengrocers.jpg' %}" alt="greengrocers-img">
+                        </a>
+                        <a class="shop-by-link" href="/trader/5/products/">
+                            <img class="shop-by-img" src="{% static 'images/fishmongers.jpg' %}" alt="fishmongers-img">
+                        </a>
+                        <a class="shop-by-link" href="/trader/7/products/">
+                            <img class="shop-by-img" src="{% static 'images/bakery.jpg' %}" alt="bakery-img">
+                        </a>
+                        <a class="shop-by-link" href="/trader/8/products/">
+                            <img class="shop-by-img" src="{% static 'images/delicateseen.jpg' %}" alt="delicateseen-img">
+                        </a>
+                    </div>
+                    <div class="shop-by-controls d-none">
+                        <span id="shop-by-prev">
+                            <span class="iconify" data-icon="akar-icons:circle-chevron-left-fill" data-inline="false"></span>
+                        </span>
+                        <span id="shop-by-next">
+                            <span class="iconify" data-icon="akar-icons:circle-chevron-right-fill" data-inline="false"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="home-row-wrapper">
+            <div class="home-row-title-wrapper">
+                <div class="home-row-title">Popular Products</div>
+            </div>
+            <div class="home-row-content">
+                <div class="card-row">
+                {% for product in products %}
+                    <div class="card-col">
+                        <div class="card">
+                            <div class="card-img-wrapper">
+                                <a href="/products/{{  product.PRODUCT_ID }}/">
+                                    <img class="card-img" src="{{ product.thumbnailUrl }}" alt="product-image">
+                                </a>
+                            </div>
+                            <div class="card-body">
+                                <div class="card-title">
+                                    <a href="/products/{{  product.PRODUCT_ID }}/">
+                                        {{ product.PRODUCT_NAME }}
+                                    </a>
+                                </div>
+                                <div class="sm-stars" style="--rating: {{product.rating.average}};"></div>
+                                <div class="card-footer">
+                                    <div class="card-price">{{ product.PRICE|floatformat:2 }} GBP</div>
+                                    <div class="d-flex">
+                                        {% if is_authenticated and not is_trader and not is_admin %}
+                                        <div class="card-cart wishlist-button {% if product.isInWishList %}active{% endif %}" data-product-id="{{product.PRODUCT_ID}}">
+                                            {% if product.isInWishList %}
+                                                <span class='iconify' data-icon='bi:heart-fill' data-inline='false'></span>
+                                            {% else %}
+                                                <span class='iconify' data-icon='el:heart-empty' data-inline='false'></span>
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                        {% if product.isAvailable and not is_trader and not is_admin %}
+                                            <div class="card-cart add-to-cart" data-product-id="{{ product.PRODUCT_ID }}" data-quantity="1"
+                                            {% if not user %}
+                                            data-price="{{ product.PRICE }}"
+                                            data-image="{{ product.thumbnailUrl }}"
+                                            data-discount="{{ product.DISCOUNT }}"
+                                            data-product-name="{{ product.PRODUCT_NAME }}"
+                                            {% endif %}
+                                            >
+                                                <span></span>
+                                                <span class="iconify" data-icon="fluent:cart-20-regular" data-inline="false"></span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </div>
+            </div>
+            <div class="more-btn-wrapper">
+                <a href="/page/{{page}}/" class="more-btn">
+                    <span>More Products</span>
+                    <span class="iconify" data-icon="ant-design:caret-down-outlined" data-inline="false"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'js/wishlist.js' %}"></script>
+    <script src="{% static 'js/slider.js' %}"></script>
+    <script src="{% static 'js/shopBySlider.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    {% if user %}
+    <script src="{% static 'js/add-to-cart.js' %}"></script>
+    {% else %}
+    <script src="{% static 'js/add-to-cart-local.js' %}"></script>
+    {% endif %}
+{% endblock %}
