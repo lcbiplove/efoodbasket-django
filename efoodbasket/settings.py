@@ -150,3 +150,7 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
 WEBSITE_DOMAIN = 'http://localhost:8000'
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = BASE_DIR / "media"

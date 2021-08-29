@@ -2,9 +2,16 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from random import randint
 from django.utils import timezone
+from django.forms import ModelForm
+
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, fullname, contact, address=None, password=None):
+    def create_user(
+            self, email, fullname,
+            contact,
+            address=None,
+            user_role=None,
+            password=None):
         """
         Creates and saves a User with the given email, date of
         birth and password.
@@ -15,16 +22,18 @@ class UserManager(BaseUserManager):
         user = self.model(
             email=self.normalize_email(email),
             fullname=fullname,
+            address=address,
+            user_role=user_role,
             contact=contact,
         )
-
         user.set_password(password)
         user.otp = randint(100000, 999999)
         user.otp_last_date = timezone.now()
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, fullname, contact, password=None):
+    def create_superuser(
+            self, email, fullname, contact, address=None, password=None):
         """
         Creates and saves a superuser with the given email, date of
         birth and password.
@@ -34,6 +43,7 @@ class UserManager(BaseUserManager):
             password=password,
             fullname=fullname,
             contact=contact,
+            address=address
         )
         user.user_role = User.USER_IS_ADMIN
         user.is_active = True
@@ -41,6 +51,7 @@ class UserManager(BaseUserManager):
         self.otp_last_date = timezone.now()
         user.save(using=self._db)
         return user
+        
 
 class User(AbstractBaseUser):
     USER_IS_CUSTOMER = 'CUSTOMER'
@@ -55,7 +66,9 @@ class User(AbstractBaseUser):
     email = models.EmailField(unique=True)
     fullname = models.CharField(max_length=48)
     address = models.CharField(max_length=48)
-    user_role = models.CharField(max_length=20, choices=USER_TYPE_CHOICES, default=USER_IS_CUSTOMER)
+    user_role = models.CharField(
+                max_length=20,
+                choices=USER_TYPE_CHOICES, default=USER_IS_CUSTOMER)
     contact = models.IntegerField()
     joined_date = models.DateTimeField(auto_now_add=True)
     otp = models.IntegerField(null=True)
@@ -85,6 +98,10 @@ class User(AbstractBaseUser):
         return self.USER_IS_ADMIN == self.user_role
 
     @property
+    def is_trader(self):
+        return self.USER_IS_TRADER == self.user_role
+
+    @property
     def valid_otp(self):
         if self.otp_expired:
             self.otp = randint(100000, 999999)
@@ -111,9 +128,25 @@ class Trader(models.Model):
     pan = models.CharField(unique=True, max_length=12)
     product_type = models.CharField(unique=True, max_length=30)
     product_details = models.TextField(max_length=4000)
-    documents_path = models.TextField(max_length=1000)
-    is_approved = models.CharField(default=APPROVAL_IS_PENDING, choices=APPROVAL_CHOICES, max_length=1)
+    is_approved = models.CharField(
+        default=APPROVAL_IS_PENDING, choices=APPROVAL_CHOICES, max_length=1)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return f"{self.user.email}"
+
+
+class TraderDocument(models.Model):
+    trader = models.ForeignKey(Trader, on_delete=models.CASCADE)
+    document = models.ImageField(upload_to='documents/')
+
+
+class TraderDocumentForm(ModelForm):
+    class Meta:
+        model = TraderDocument
+        fields = ('document', )
+        error_messages = {
+            'document': {
+                'required': "Please choose at least one file.",
+            },
+        }

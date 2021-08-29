@@ -1,5 +1,5 @@
 import re
-from .models import User
+from .models import User, Trader
 from django.core.validators import validate_email
 
 
@@ -25,7 +25,6 @@ class UserValidator():
         if not re.search("^[a-zA-Z]+(?:\s[a-zA-Z]+)+$", fullname):
             self.errors['fullname'] = "Please enter a valid full name."
         
-    
     def validate_address(self, address, extra) -> None:
         if len(address) < 4:
             self.errors['address'] = "Please enter a valid address."
@@ -53,3 +52,24 @@ class UserValidator():
     def validate_confpass(self, confpass, password) -> None:
         if password != confpass:
             self.errors['confpass'] = "Password does not match."
+
+
+class TraderValidator(UserValidator):
+    def validate_pan(self, pan, extra) -> None:
+        if not re.search("[A-Z]{5}[0-9]{4}[A-Z]{1}", pan):
+            self.errors['pan'] = "Please enter a valid pan number."
+        elif Trader.objects.filter(pan=pan).exists():
+            self.errors['pan'] = "Please enter another pan number. This already exist."
+        
+    def validate_type(self, type, extra) -> None:
+        if len(type) < 4:
+            self.errors['type'] = "Please enter a valid product type."
+        elif Trader.objects.filter(product_type__icontains=type).exists():
+            self.errors['type'] = "Please enter another product type."
+
+    def validate_details(self, details, extra) -> None:
+        if len(details) < 100:
+            self.errors['details'] = "Please enter details of at least 100 characters"
+    
+
+

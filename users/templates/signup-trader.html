@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Signup | efoodbasket{% endblock %}
+{% block title %}Signup Trader | efoodbasket{% endblock %}
 
 {% block titleLinks %}
-    <link rel="stylesheet" href="/public/css/my-drop-uploader.css">
-    <link rel="stylesheet" type="text/css" href="/public/css/form.css">
-    <link rel="stylesheet" type="text/css" href="/public/css/signup.css">
+    <link rel="stylesheet" href="{% static 'css/my-drop-uploader.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/form.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/signup.css' %}">
 {% endblock %}
 
 {% block main %}
@@ -16,10 +17,11 @@
                 </div>
                 <div class="signup-container">
                     <div>
-                        <img src="/public/images/efoodbasket-name.png" class="login-logo" alt="">
+                        <img src="{% static 'images/efoodbasket-name.png' %}" class="login-logo" alt="">
                     </div>
                     <div class="form-wrapper">
-                        <form class="login-form" action="/signup-trader/" method="POST" enctype="multipart/form-data" >
+                        <form class="login-form" action="{% url 'signup_trader' %}" method="POST" enctype="multipart/form-data" >
+                            {% csrf_token %}
                             <div class="form-row">
                                 <div class="form-col-2">
                                     <div class="inpt-wrapper">
@@ -78,12 +80,12 @@
                                 <label >Documents</label>
                                 <div id="drop-area">
                                     <div class="cloud-img-wrapper">
-                                        <img class="cloud-upload-img" src="/public/images/cloud-upload.svg" alt="Cloud-upload-icon">
+                                        <img class="cloud-upload-img" src="{% static 'images/cloud-upload.svg' %}" alt="Cloud-upload-icon">
                                     </div>
                                     <div class="drop-tips">
                                         Drop files here or <label for="fileElem" class="browse-files">Browse</label>
                                     </div>
-                                    <input type="file" id="fileElem" name="documents[]" accept="image/*" multiple>
+                                    <input type="file" id="fileElem" name="document" accept="image/*" multiple>
                                     <div id="gallery"></div>
                                 </div>
                                 <small class="red-text">{{ errors.documents }}</small>
@@ -117,7 +119,7 @@
 {% endblock %}
 
 {% block scripts %}
-    <script src="/public/js/my-drop-uploader.js"></script>
+    <script src="{% static 'js/my-drop-uploader.js' %}"></script>
 {% endblock %}
 
 
