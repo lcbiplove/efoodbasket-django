@@ -6,5 +6,7 @@ urlpatterns = [
     path('logout/', views.LogoutView.as_view(next_page='login'), name='logout'),
     path('signup/', views.SignupView.as_view(), name='signup'),
     path('signup-trader/', views.SignupTraderView.as_view(), name='signup_trader'),
-    path('auth/<id>/verify-email/', views.VerifyEmailView.as_view(), name='verify_email'),
+    path('accounts/<id>/verify-email/', views.VerifyEmailView.as_view(), name='verify_email'),
+    path('accounts/reset/<uidb64>/<token>/', views.PasswordResetView.as_view(), name='password_reset'),
+    path('admin/trader-requests/<pk>/', views.TraderRequestsDetailView.as_view(), name='trader_request'),
 ]

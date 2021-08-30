@@ -55,11 +55,11 @@
                     <span class="iconify down-arrow" data-icon="ant-design:caret-down-outlined" data-inline="false"></span>
                     <div class="account-nav-links">
                         {% if not is_authenticated %}
-                        <a href="/login/">
+                        <a href="{% url 'login' %}">
                             <span class="iconify" data-icon="clarity:login-line" data-inline="false"></span>
                             <span>Login</span>
                         </a>
-                        <a href="/signup/">
+                        <a href="{% url 'signup' %}">
                             <span class="iconify" data-icon="line-md:account-add" data-inline="false"></span>
                             <span>Sign up</span>
                         </a>
@@ -167,11 +167,11 @@
         <div id="menu-container" class="menu-container">
             <div class="menu-content">
                 {% if not is_authenticated %}
-                    <a class="menu-link" href="/login/">
+                    <a class="menu-link" href="{% url 'login' %}">
                         <span>Login</span>
                         <span class="iconify menu-link-icon" data-icon="clarity:login-line" data-inline="false"></span>
                     </a>
-                    <a class="menu-link" href="/signup/">
+                    <a class="menu-link" href="{% url 'signup' %}">
                         <span>Sign up</span>
                         <span class="iconify menu-link-icon" data-icon="line-md:account-add" data-inline="false"></span>
                     </a>

@@ -5,7 +5,7 @@ from django.core.validators import validate_email
 
 # def validate_contact(contact) -> None:
 class UserValidator():
-    def __init__(self, data, names, *args, **kwargs) -> None:
+    def __init__(self, data, names, validate_terms=True, *args, **kwargs) -> None:
         self.errors = {}
         """Validates user from the post method
         data: request.post
@@ -15,8 +15,10 @@ class UserValidator():
             if key in names:
                 password = data['password'] if key == 'confpass' else None
                 getattr(self, f"validate_{key}")(data[key], password)
-        terms = data.get('terms', None)
-        self.validate_terms(terms, None)
+
+        if validate_terms:
+            terms = data.get('terms', None)
+            self.validate_terms(terms, None)
 
     def get_errors(self) -> dict:
         return self.errors

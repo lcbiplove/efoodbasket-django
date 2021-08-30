@@ -5,7 +5,12 @@ from django.views import View
 from .validators import TraderValidator, UserValidator
 from django.contrib.auth.views import LogoutView
 from django.contrib import messages
-from efoodbasket.emails import send_verify_code
+from efoodbasket import emails
+from django.views.generic import DetailView
+from .permissions import AdminPermission
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.encoding import force_bytes, force_text
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 class LoginView(View):
     def get(self, request, *args, **kwargs):
@@ -55,7 +60,7 @@ class SignupView(View):
                 user_role=User.USER_IS_CUSTOMER,
                 address=request.POST.get('address'),
             )
-            send_verify_code(user)
+            emails.send_verify_code(user)
             messages.add_message(request, messages.INFO, "Please check your email to verify your account.", 'info')
             return redirect('verify_email', id=user.id)
 
@@ -98,7 +103,7 @@ class SignupTraderView(View):
                 address=request.POST.get('address'),
                 user_role=User.USER_IS_TRADER
             )
-            send_verify_code(user)
+            emails.send_verify_code(user)
             trader = Trader.objects.create(
                 pan=request.POST.get('pan'),
                 product_type=request.POST.get('type'),
@@ -128,7 +133,7 @@ class VerifyEmailView(View):
         user_id = self.kwargs.get('id')
         error = ''
         if resend:
-            send_verify_code(User.objects.get(pk=user_id))
+            emails.send_verify_code(User.objects.get(pk=user_id))
             messages.add_message(request, messages.INFO, "Please check your email to verify your account.", 'info')
         else:
             error = self.check_verify_code(request=request, user_id=user_id)
@@ -149,10 +154,81 @@ class VerifyEmailView(View):
             if str(user.otp) != str(code):
                 return 'Please enter correct code'
             else:
-                user.is_active = True
-                user.save()
-                login(request, user)
-                messages.add_message(request, messages.SUCCESS, "Account verified successfully.", 'success')
+                self.handle_correct_code(request=request, user=user)
         else:
             return 'Code is already expired'
 
+    def handle_correct_code(self, request, user):
+        user.is_active = True
+        user.save()
+        if user.is_trader:
+            messages.add_message(request, messages.INFO, 'Your email is verified successfully. You will be notified once your documents are reviewed.', 'info')
+            emails.send_trader_request_to_admin(user)
+        else:
+            login(request, user)
+            messages.add_message(request, messages.SUCCESS, 'Account verified successfully.', 'success')
+
+class TraderRequestsDetailView(AdminPermission, DetailView):
+    model = User
+    template_name = "trader-request.html"
+    context_object_name = 'trader'
+    queryset = User.objects.filter(user_role=User.USER_IS_TRADER)
+
+    def post(self, request, *args, **kwargs):
+        accept = request.POST.get('accept')
+        reject = request.POST.get('reject')
+        user = self.get_object()
+        if reject:
+            emails.send_trader_rejected(user)
+            user.delete()
+            
+        if accept:
+            user.trader.status = Trader.APPROVAL_IS_SUCCESS
+            user.trader.save()
+            token_generator = PasswordResetTokenGenerator()
+            token = token_generator.make_token(user)
+            uidb64 = urlsafe_base64_encode(force_bytes(user.id))
+            emails.send_trader_accepted(user, token, uidb64)
+        
+        return redirect('/admin/')
+
+
+class PasswordResetView(View):
+
+    def dispatch(self, request, *args, **kwargs):
+        uidb64 = self.kwargs.get('uidb64')
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        self.user = get_object_or_404(User, pk=uid)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        token_generator = PasswordResetTokenGenerator()
+        token = self.kwargs.get('token')
+        if not token_generator.check_token(self.user, token):
+            messages.add_message(request, messages.ERROR, 'Invalid link!!! Try resetting password again.', 'fail')
+            return redirect('login')
+
+        return render(request, 'password-reset.html')
+
+    def post(self, request, *args, **kwargs):
+        keys = ['password', 'confpass']
+
+        validator = UserValidator(request.POST, keys, validate_terms=False)
+        errors = validator.get_errors()
+
+        if len(errors) == 0:
+            self.user.set_password(request.POST.get('password'))
+            self.user.save()
+            login(request, self.user)
+            messages.add_message(request, messages.SUCCESS, "Password saved and logged in successfully.", 'success')
+            return redirect('/')
+
+        return render(request, 'password-reset.html', {
+            'errors': errors,
+        })
+
+
+    
+
+    
+    

@@ -134,10 +134,13 @@ STATICFILES_DIRS = [
 ]
 
 
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_URL = '/login/'
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -154,3 +157,6 @@ WEBSITE_DOMAIN = 'http://localhost:8000'
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = BASE_DIR / "media"
+
+ADMINS = [('Biplove', 'lcbiplove1@gmail.com'),]
+

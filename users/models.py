@@ -72,7 +72,6 @@ class User(AbstractBaseUser):
     contact = models.IntegerField()
     joined_date = models.DateTimeField(auto_now_add=True)
     otp = models.IntegerField(null=True)
-    token = models.CharField(null=True, max_length=48)
     otp_last_date = models.DateTimeField(null=True)
     is_active = models.BooleanField(default=False)
 
@@ -114,6 +113,13 @@ class User(AbstractBaseUser):
         diff = timezone.now() - self.otp_last_date
         return diff.seconds > 60*5
 
+    @property
+    def beautify_contact(self):
+        # $num = '('.substr($phone_number, 0, 3).') '.substr($phone_number, 3, 3).'-'.substr($phone_number,6)
+        contact = str(self.contact)
+        phone = format(int(contact[:-1]), ",").replace(",", "-") + contact[-1]
+        return phone
+
 
 class Trader(models.Model):
     APPROVAL_IS_SUCCESS = 'Y'
@@ -128,16 +134,20 @@ class Trader(models.Model):
     pan = models.CharField(unique=True, max_length=12)
     product_type = models.CharField(unique=True, max_length=30)
     product_details = models.TextField(max_length=4000)
-    is_approved = models.CharField(
+    status = models.CharField(
         default=APPROVAL_IS_PENDING, choices=APPROVAL_CHOICES, max_length=1)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
         return f"{self.user.email}"
 
+    @property
+    def is_approved(self):
+        return self.status == self.APPROVAL_IS_SUCCESS
+
 
 class TraderDocument(models.Model):
-    trader = models.ForeignKey(Trader, on_delete=models.CASCADE)
+    trader = models.ForeignKey(Trader, on_delete=models.CASCADE, related_name='documents')
     document = models.ImageField(upload_to='documents/')
 
 

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Trader Request | efoodbasket{% endblock %}
+
+{% block titleLinks %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/trader-request.css' %}">
+{% endblock %}
+
+{% block main %}
+    <div class="max-width-wrapper">
+        <div class="trader-request-wrapper">
+            <div class="trader-req-title">
+                Request Trader
+            </div>
+            <div class="trader-req-user-wrapper">
+                <div class="trader-req-icon-wrapper">
+                    <span class="iconify" data-icon="mdi:card-account-details-outline" data-inline="false"></span>
+                </div>
+                <div class="trader-req-s-row">
+                    <div>Name</div>
+                    <div>{{ trader.fullname }}</div>
+                </div>
+                <div class="trader-req-s-row">
+                    <div>Email</div>
+                    <div>{{ trader.email }}</div>
+                </div>
+                <div class="trader-req-s-row">
+                    <div>Address</div>
+                    <div>{{ trader.address }}</div>
+                </div>
+                <div class="trader-req-s-row">
+                    <div>Contact</div>
+                    <div>{{ trader.beautify_contact }}</div>
+                </div>
+                <div class="trader-req-s-row">
+                    <div>Requested Date</div>
+                    <div>{{ trader.joined_date }}</div>
+                </div>
+            </div>
+            <div class="trader-req-user-wrapper">
+                <div class="trader-req-icon-wrapper">
+                    <span class="iconify" data-icon="bi:shop" data-inline="false"></span>
+                </div>
+                <div class="trader-req-s-row">
+                    <div>PAN Number</div>
+                    <div>{{ trader.trader.pan }}</div>
+                </div>
+                <div class="trader-req-s-row">
+                    <div>Product Type</div>
+                    <div>{{ trader.trader.product_type }}</div>
+                </div>
+                <div class="trader-req-s-row-more">
+                    <div>Product Details</div>
+                </div>
+                <div class="trader-req-s-row">
+                    <div></div>
+                    <div class="prdo-we-nor">{{ trader.trader.product_details }}</div>
+                </div>
+                <div class="trader-req-s-row-more">
+                    <div>Documents</div>
+                </div>
+                <div class="trader-req-s-docs-wrap">
+                {% for obj in trader.trader.documents.all %}
+                    <a href="{{obj.document.url}}" target="_blank" title="Click to view document">
+                        <img src="{{obj.document.url}}" alt="">
+                    </a>
+                    
+                {% endfor %}
+                </div>
+            </div>
+            <div class="req-acc-rej-wrapper">
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" name="accept" class="accept" value="accept" onclick="return confirm('Are you sure you want to accept the trader?');">Accept</button>
+                </form>
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" name="reject" class="reject" value="reject" onclick="return confirm('Are you sure you want to reject the trader request?');">Reject</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
