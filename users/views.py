@@ -248,8 +248,6 @@ class ForgotPasswordView(View):
             uidb64 = urlsafe_base64_encode(force_bytes(user.id))
             emails.send_password_reset(user, token, uidb64)
             messages.add_message(request, messages.INFO, 'Password reset link is send to your email.', 'info')
-
-
         
         return render(request, 'forgot-password.html', {
             'errors': errors
