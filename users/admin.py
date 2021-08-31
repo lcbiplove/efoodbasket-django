@@ -11,7 +11,7 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal info', {'fields': ('fullname', 'address', 'contact', 'joined_date', 'is_active')}),
-        ('Token info', {'fields': ('otp', 'token', 'otp_last_date')}),
+        ('Token info', {'fields': ('otp', 'otp_last_date')}),
         ('Permissions', {'fields': ('user_role',)}),
     )
     readonly_fields=('joined_date',)

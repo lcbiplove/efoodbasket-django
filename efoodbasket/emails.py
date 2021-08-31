@@ -109,3 +109,22 @@ def send_trader_accepted(user, token, uidb64):
         recipient_list=[email],
         html_message=body
     )
+
+def send_password_reset(user, token, uidb64):
+    link = WEBSITE_DOMAIN + reverse('password_reset', kwargs={
+        'uidb64': uidb64,
+        'token': token
+    })
+    title = "Password Reset Link"
+    link_or_code_html = f"<a href='{link}' target='_blank' style='font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 15px 25px; border-radius: 2px; border: 1px solid #7FCB0A; display: inline-block;'>Reset Password</a>"
+    body_text = "We have recently received a request to reset forgotten password for your efoodbasket account. To change your efoodbasket account password, please click the link below:"
+    subject = "Password Reset"
+    body = get_email_body(title, link_or_code_html, body_text)
+    alt_body = get_alt_body(link, body_text)
+    send_mail(
+        subject=subject, 
+        message=alt_body, 
+        from_email='no@reply.com', 
+        recipient_list=[user.email],
+        html_message=body
+    )

@@ -227,6 +227,34 @@ class PasswordResetView(View):
             'errors': errors,
         })
 
+class ForgotPasswordView(View):
+    
+    def get(self, request, *args, **kwargs):
+        return render(request, 'forgot-password.html')
+    
+    def post(self, request, *args, **kwargs):
+        errors = {}
+        email = request.POST.get('email')
+
+        user = User.objects.filter(email=email)
+
+        if not user.exists():
+            errors['email'] = "Email you entered does not exist"
+
+        if len(errors) == 0:
+            user = user.first()
+            token_generator = PasswordResetTokenGenerator()
+            token = token_generator.make_token(user)
+            uidb64 = urlsafe_base64_encode(force_bytes(user.id))
+            emails.send_password_reset(user, token, uidb64)
+            messages.add_message(request, messages.INFO, 'Password reset link is send to your email.', 'info')
+
+
+        
+        return render(request, 'forgot-password.html', {
+            'errors': errors
+        })
+
 
     
 
