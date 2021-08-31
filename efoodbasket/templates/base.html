@@ -54,7 +54,7 @@
                     <span class="cart-icon-title">Account</span>
                     <span class="iconify down-arrow" data-icon="ant-design:caret-down-outlined" data-inline="false"></span>
                     <div class="account-nav-links">
-                        {% if not is_authenticated %}
+                        {% if not user.is_authenticated %}
                         <a href="{% url 'login' %}">
                             <span class="iconify" data-icon="clarity:login-line" data-inline="false"></span>
                             <span>Login</span>
@@ -65,8 +65,8 @@
                         </a>
                         {% endif %}
 
-                        {% if is_authenticated %}
-                        <a href="/manage-account/">
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'manage_account' %}">
                             <span class="iconify" data-icon="line-md:account" data-inline="false"></span>
                             <span>Manage Account</span>
                         </a>
@@ -103,13 +103,10 @@
                             </span>
                             <span>Notifications</span>
                         </a>
-                        <form action="/logout/" method="POST" class="d-flex">
-                            <input name="val" type="hidden" value="val">
-                            <button type="submit" name="logout" value="logout">
-                                <span class="iconify" data-icon="carbon:logout" data-inline="false"></span>
-                                <span>Logout</span>
-                            </button>
-                        </form>
+                        <a href="{% url 'logout' %}" name="logout">
+                            <span class="iconify" data-icon="carbon:logout" data-inline="false"></span>
+                            <span>Logout</span>
+                        </a>
                         {% endif %}
                     </div>
                 </div>
@@ -166,7 +163,7 @@
         <div id="overlay"></div>
         <div id="menu-container" class="menu-container">
             <div class="menu-content">
-                {% if not is_authenticated %}
+                {% if not user.is_authenticated %}
                     <a class="menu-link" href="{% url 'login' %}">
                         <span>Login</span>
                         <span class="iconify menu-link-icon" data-icon="clarity:login-line" data-inline="false"></span>
@@ -177,12 +174,12 @@
                     </a>
                 {% endif %}
                 
-                {% if is_authenticated %}
+                {% if user.is_authenticated %}
                     <a class="menu-link" href="/">
                         <span>Home</span>
                         <span class="iconify menu-link-icon" data-icon="ant-design:home-outlined" data-inline="false"></span>
                     </a>
-                    <a class="menu-link" href="/manage-account/">
+                    <a class="menu-link" href="{% url 'manage_account' %}">
                         <span>Account</span>
                         <span class="iconify menu-link-icon" data-icon="line-md:account" data-inline="false"></span>
                     </a>
@@ -219,13 +216,10 @@
                         <span class="iconify menu-link-icon" data-icon="el:heart-empty" data-inline="false"></span>
                     </a>
                     {% endif %}
-                    <form action="/logout/" method="POST" class="d-flex">
-                        <input name="val" type="hidden" value="val">
-                        <button class="menu-link" type="submit" name="logout" value="logout">
-                            <span>Logout</span>
-                            <span class="iconify menu-link-icon" data-icon="carbon:logout" data-inline="false"></span>
-                        </button>
-                    </form>
+                    <a href="{% url 'logout' %}" class="menu-link">
+                        <span>Logout</span>
+                        <span class="iconify menu-link-icon" data-icon="carbon:logout" data-inline="false"></span>
+                    </a>
                 {% endif %}
             </div>
         </div>

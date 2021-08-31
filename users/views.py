@@ -13,6 +13,8 @@ from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.urls import reverse
 from django.middleware.csrf import get_token
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 class LoginView(View):
     def get(self, request, *args, **kwargs):
@@ -271,7 +273,58 @@ class ForgotPasswordView(View):
             'errors': errors
         })
 
-    
+
+class ManageAccountView(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        return render(request, 'manage-account.html')
+
+    def post(self, request, *args, **kwargs):
+        errors = {}
+
+        keys = ['fullname', 'address', 'contact']
+
+        validator = UserValidator(request.POST, keys, validate_terms=False)
+        errors = validator.get_errors()
+
+        preserved = {key:request.POST[key] for key in keys}
+
+        if len(errors) == 0:
+            for key in keys:
+                setattr(request.user, key, request.POST.get(key))
+            request.user.save()
+            messages.add_message(request, messages.SUCCESS, 'Profile updated successfully.', 'success')
+            return redirect('manage_account')
+
+        return render(request, 'manage-account.html', {
+            'preserved': preserved,
+            'errors': errors,
+        })
+
+class ChangePasswordView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'change-password.html')
+
+    def post(self, request, *args, **kwargs):
+        errors = {}
+        keys = ['password', 'confpass']
+
+        validator = UserValidator(request.POST, keys, validate_terms=False)
+        errors = validator.get_errors()
+
+        if not request.user.check_password(request.POST.get('oldpass')):
+            errors['oldpass'] = "Password you entered is not correct."
+
+        if len(errors) == 0:
+            request.user.set_password(request.POST.get('password'))
+            request.user.save()
+            update_session_auth_hash(request, request.user)
+            messages.add_message(request, messages.SUCCESS, "Password updated successfully.", 'success')
+            return redirect('manage_account')
+
+        return render(request, 'change-password.html', {
+            'errors': errors,
+        })
 
     
     
