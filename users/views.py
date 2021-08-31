@@ -11,6 +11,8 @@ from .permissions import AdminPermission
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.urls import reverse
+from django.middleware.csrf import get_token
 
 class LoginView(View):
     def get(self, request, *args, **kwargs):
@@ -19,8 +21,13 @@ class LoginView(View):
     def post(self, request,*args, **kwargs):
         email = request.POST['email']
         password = request.POST['password']
+
         user = authenticate(request, email=email, password=password)
-        if user is not None:
+
+        if user:
+            if self.handle_not_activated(request, user):
+                return redirect('login')
+                
             next = request.GET.get('next', '/')
             login(request, user)
             messages.add_message(request, messages.SUCCESS, "Logged in successfully.", 'success')
@@ -28,6 +35,16 @@ class LoginView(View):
         else:
             messages.add_message(request, messages.ERROR, "Incorrect email or password.", 'fail')
         return render(request, 'login.html')
+    
+    def handle_not_activated(self, request, user):
+        if not user.can_login:
+            csrf_token = get_token(request)
+            csrf_token_html = f"<input type='hidden' name='csrfmiddlewaretoken' value='{csrf_token}' />"
+            verify_link = reverse('verify_email', kwargs={'id': user.id})
+            mssg = f"Your email is not verified. You need to verify your email to login.<form class='otp-inline-form' method='POST' action='{verify_link}'>{csrf_token_html}<input type='hidden' name='email' value='{user.email}' /><input type='hidden' name='resend' value='resend' /><button class='submit'>VERIFY</button></form>"
+
+            messages.add_message(request, messages.INFO, mssg, 'info')
+            return True
 
 class LogoutView(LogoutView):
     def dispatch(self, request, *args, **kwargs):
@@ -218,6 +235,7 @@ class PasswordResetView(View):
 
         if len(errors) == 0:
             self.user.set_password(request.POST.get('password'))
+            self.user.is_active = True
             self.user.save()
             login(request, self.user)
             messages.add_message(request, messages.SUCCESS, "Password saved and logged in successfully.", 'success')
@@ -252,7 +270,6 @@ class ForgotPasswordView(View):
         return render(request, 'forgot-password.html', {
             'errors': errors
         })
-
 
     
 

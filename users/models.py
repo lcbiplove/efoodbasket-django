@@ -120,6 +120,10 @@ class User(AbstractBaseUser):
         phone = format(int(contact[:-1]), ",").replace(",", "-") + contact[-1]
         return phone
 
+    @property
+    def can_login(self):
+        return self.is_active == True
+
 
 class Trader(models.Model):
     APPROVAL_IS_SUCCESS = 'Y'
