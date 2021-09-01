@@ -7,7 +7,7 @@ from django.contrib.auth.views import LogoutView
 from django.contrib import messages
 from efoodbasket import emails
 from django.views.generic import DetailView
-from .permissions import AdminPermission
+from .permissions import AdminPermission, UserNotRequired
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -16,27 +16,38 @@ from django.middleware.csrf import get_token
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-class LoginView(View):
+class LoginView(UserNotRequired, View):
+
+    def dispatch(self, request, *args, **kwargs):
+        self.next = request.GET.get('next', '/') 
+        self.next_route = self.next != '/' and "?next=" + self.next or ""
+        return super().dispatch(request, *args, **kwargs)
+
     def get(self, request, *args, **kwargs):
-        return render(request, 'login.html')
+        return render(request, 'login.html', {
+            'next_route': self.next_route,
+        })
 
     def post(self, request,*args, **kwargs):
         email = request.POST['email']
         password = request.POST['password']
 
+        print(self.next)
+
         user = authenticate(request, email=email, password=password)
 
         if user:
             if self.handle_not_activated(request, user):
-                return redirect('login')
-                
-            next = request.GET.get('next', '/')
+                return redirect(self.next)
+            
             login(request, user)
             messages.add_message(request, messages.SUCCESS, "Logged in successfully.", 'success')
-            return redirect(next)
+            return redirect(self.next)
         else:
             messages.add_message(request, messages.ERROR, "Incorrect email or password.", 'fail')
-        return render(request, 'login.html')
+        return render(request, 'login.html', {
+            'next_route': self.next_route
+        })
     
     def handle_not_activated(self, request, user):
         if not user.can_login:
@@ -48,13 +59,13 @@ class LoginView(View):
             messages.add_message(request, messages.INFO, mssg, 'info')
             return True
 
-class LogoutView(LogoutView):
+class LogoutView(LoginRequiredMixin, LogoutView):
     def dispatch(self, request, *args, **kwargs):
         response = super().dispatch(request, *args, **kwargs)
         messages.add_message(request, messages.SUCCESS, "Logged out successfully.", 'success')
         return response
 
-class SignupView(View):
+class SignupView(UserNotRequired, View):
     def get(self, request, *args, **kwargs):
         return render(request, 'signup.html')
 
@@ -89,7 +100,7 @@ class SignupView(View):
         })
 
 
-class SignupTraderView(View):
+class SignupTraderView(UserNotRequired, View):
     def get(self, request, *args, **kwargs):
         return render(request, 'signup-trader.html')
 
@@ -139,7 +150,7 @@ class SignupTraderView(View):
             'valid_data': valid_data,
         })
 
-class VerifyEmailView(View):
+class VerifyEmailView(UserNotRequired, View):
     def get(self, request, *args, **kwargs):
         user_id = self.kwargs.get('id')
 
@@ -212,7 +223,7 @@ class TraderRequestsDetailView(AdminPermission, DetailView):
         return redirect('/admin/')
 
 
-class PasswordResetView(View):
+class PasswordResetView(UserNotRequired, View):
 
     def dispatch(self, request, *args, **kwargs):
         uidb64 = self.kwargs.get('uidb64')
@@ -247,7 +258,7 @@ class PasswordResetView(View):
             'errors': errors,
         })
 
-class ForgotPasswordView(View):
+class ForgotPasswordView(UserNotRequired, View):
     
     def get(self, request, *args, **kwargs):
         return render(request, 'forgot-password.html')

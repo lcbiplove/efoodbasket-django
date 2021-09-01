@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Product | efoodbasket{% endblock %}
+
+{% block titleLinks %}
+    <link rel="stylesheet" type="text/css" href="/public/css/form.css">
+    <link rel="stylesheet" type="text/css" href="/public/css/add-product.css">
+{% endblock %}
+
+{% block main %}
+    <div class="max-width-wrapper">
+        <div class="signup-outer-wrapper">
+            <div class="signup-wrapper">
+                <div class="signup-container">
+                    <div>
+                        <img src="/public/images/efoodbasket-name.png" class="login-logo" alt="eFoodBasket-logo">
+                    </div>
+                    <div class="form-wrapper">
+                        <form class="login-form" method="POST" >
+                            <div class="form-row">
+                                <div class="form-col-2">
+                                    <div class="inpt-wrapper">
+                                        <label for="nameId">Product Name</label>
+                                        <input id="nameId" type="text" name="product_name" placeholder="Product Name..." value="{{ product.product_name }}">
+                                        <small class="red-text">{{ errors.product_name }}</small>
+                                    </div>
+                                </div>
+                                <div class="form-col-2">
+                                    <div class="inpt-wrapper">
+                                        <label for="priceId">Price</label>
+                                        <input id="priceId" type="text" name="price" placeholder="Product Price..." value="{{ product.price }}">
+                                        <small class="red-text">{{ errors.price }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-col-2">
+                                    <div class="inpt-wrapper">
+                                        <label for="quantityId">Quantity</label>
+                                        <input id="quantityId" type="text" name="quantity" placeholder="Product Quantity..." value="{{ product.quantity }}">
+                                        <small class="red-text">{{ errors.quantity }}</small>
+                                    </div>
+                                </div>
+                                <div class="form-col-2">
+                                    <div class="inpt-wrapper">
+                                        <label for="categoryId">Product Category</label>
+                                        <select name="category_id" id="categoryId">
+                                            <option value="">--Select category--</option>
+                                            {% for category in categories %}
+                                                <option value="{{ category.CATEGORY_ID }}" {% if category.CATEGORY_ID == product.category_id %}selected{% endif %}>{{ category.CATEGORY_NAME }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <small class="red-text">{{ errors.category_id }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-col-2">
+                                    <div class="inpt-wrapper">
+                                        <input type="checkbox" name="availability" {% if product.availability == 'Y' %}checked{% endif %}> <span class="grey-text">Availability</span>
+                                    </div>
+                                </div>
+                                <div class="form-col-2">
+                                    <div class="inpt-wrapper">
+                                        <label for="shopId">Shop Name</label>
+                                        <select name="shop_id" id="shopId">
+                                            <option value="">--Select shop name--</option>
+                                            {% for shop in shops %}
+                                                <option value="{{ shop.SHOP_ID }}" {% if shop.SHOP_ID == product.shop_id %}selected{% endif %}>{{ shop.SHOP_NAME }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <small class="red-text">{{ errors.shop_id }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-col-2">
+                                <div class="inpt-wrapper">
+                                    <label for="discountId">Discount</label>
+                                    <input id="discountId" type="number" name="discount" placeholder="Product discount if any..." value="{{ product.discount }}">
+                                    <small class="red-text">{{ errors.discount }}</small>
+                                </div>
+                            </div>
+                            <div class="inpt-wrapper">
+                                <label for="detailsId">Description</label>
+                                <textarea name="description" id="detailsId" placeholder="Decribe your product in few words...">{{ product.description }}</textarea>
+                                <small class="red-text">{{ errors.description }}</small>
+                            </div>
+                            <div class="inpt-wrapper">
+                                <label for="alleryInformId">Allergy Information</label>
+                                <textarea name="allergy_information" id="alleryInformId" placeholder="Decribe your product allergy information...">{{ product.allergy_information }}</textarea>
+                                <small class="red-text">{{ errors.allergy_information }}</small>
+                            </div>
+
+                            <div class="login-btn-wrapper">
+                                <button class="login-btn" type="submit">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

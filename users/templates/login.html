@@ -18,7 +18,7 @@
                         <img src="{% static 'images/efoodbasket-name.png' %}" class="login-logo" alt="">
                     </div>
                     <div class="form-wrapper">
-                        <form class="login-form" action="/login/{{ nextRoute }}" method="POST" >
+                        <form class="login-form" action="/login/{{ next_route }}" method="POST" >
                             {% csrf_token %}
                             <div class="inpt-wrapper">
                                 <label for="emailId">Email</label>

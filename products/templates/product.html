@@ -1,0 +1,374 @@
+{% extends 'base.html' %}
+
+{% block title %}Product{% endblock %}
+
+{% block titleLinks %}
+    <link rel="stylesheet" href="/public/css/stars.css">
+    <link rel="stylesheet" type="text/css" href="/public/css/product-cards.css">
+    <link rel="stylesheet" href="/public/css/product.css">
+{% endblock %}
+
+{% block main %}
+<div class="max-width-wrapper">
+    <div class="main-product-wrapper">
+        <div class="product-details-wrapper">
+            <div class="products-main-div-wrapper">
+                <div class="product-gallery">
+                    <div class="product-preiview-img-wrapper">
+                        <img id="preview-img" class="product-preiview-img" src="{{ product.thumbnailUrl }}" alt="product-img">
+                    </div>
+                    <div class="product-img-options">
+                        <div class="shop-by-images-wrapper">
+                            <div class="shop-by-images-container">
+                                {% for image_name in product.getProductImages %}
+                                    <img class="product-img-indicator" src="/media/products/{{ image_name }}" alt="{{ image_name }}">
+                                {% endfor %}
+                            </div>
+                            <div class="shop-by-controls d-none">
+                                <span id="shop-by-prev">
+                                    <span class="iconify" data-icon="akar-icons:circle-chevron-left-fill" data-inline="false"></span>
+                                </span>
+                                <span id="shop-by-next">
+                                    <span class="iconify" data-icon="akar-icons:circle-chevron-right-fill" data-inline="false"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-details">
+                    <div id="zoom-img-result" class="zoom-img-result"></div>
+                    <div class="product-title">
+                        {{ product.PRODUCT_NAME }}
+                    </div>
+                    <div class="rating-share-wrapper">
+                        <div>
+                            <div class="product-ratings-wrap">
+                                <div class="md-stars" style="--rating: {{product.rating.average}};"></div>
+                                <div class="product-rating-in-num">
+                                    {{product.rating.total}} Ratings
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <div>
+                                    <a class="blue-text" href="/trader/{{product.getOwnerId}}/products/">Visit Trader</a>
+                                </div>
+                                <div id="stock-count" class="stock-text" data-stock-count="{{product.QUANTITY}}">
+                                {% if product.isAvailable %}
+                                    In Stock 
+                                {% else %}
+                                    Out of Stock
+                                {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex">
+                            {% if product.getOwnerId == user.user_id or is_admin %}
+                                <a href="/trader/products/{{product.PRODUCT_ID}}/edit/" class="edit-delete-product">
+                                    <span class="iconify" data-icon="akar-icons:edit" data-inline="false"></span>
+                                </a>
+                                <form action="/trader/products/{{product.PRODUCT_ID}}/delete/" method="POST">
+                                    <input type="hidden" name="value" value="value" />
+                                    <button type="submit" id="delete-product" class="edit-delete-product ml-5" onclick="return confirm('Are you sure you want to delete this product?\n\nIt will remove all data related to this product.');">
+                                        <span class="iconify" data-icon="mi:delete" data-inline="false"></span>
+                                    </button>
+                                </form>
+                            {% else %}
+                            {% if user and is_customer %}
+                                <div id="wish-product" class="share-product wishlist-button {% if product.isInWishList %}active{% endif %}" data-product-id="{{product.PRODUCT_ID}}">
+                                    {% if product.isInWishList %}
+                                        <span class='iconify' data-icon='bi:heart-fill' data-inline='false'></span>
+                                    {% else %}
+                                        <span class='iconify' data-icon='el:heart-empty' data-inline='false'></span>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                                <div id="share-product" class="share-product ml-5">
+                                    <span class="iconify" data-icon="bi:share-fill" data-inline="false"></span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="price-wrapper">
+                        <div>
+                            Price: {{ product.PRICE|number_format(2) }} GBP 
+                        </div>
+                        {% if product.DISCOUNT %}
+                        <div style="font-size: 1rem; margin-top: 10px; color: var(--light-green);">
+                            {{product.DISCOUNT}}% off
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="product-desc">
+                    {{ product.DESCRIPTION }}
+                    </div>
+                    <div class="allery-inform">
+                    {{ product.ALLERGY_INFORMATION }}
+                    </div>
+                    <div class="quantity-wrapper">
+                        <span>Quantity</span>
+                        {% if is_trader or is_admin %}
+                        <span id="quantity-value" class="quantity">{{ product.QUANTITY }}</span>
+                        {% else %}
+                        <button id="subtract-quantity" class="quantity-btn">-</button>
+                        <span id="quantity-value" class="quantity">1</span>
+                        <button id="add-quantity" class="quantity-btn">+</button>
+                        {% endif %}
+                    </div>
+                    {% if product.isAvailable and not is_trader and not is_admin %}
+                        <div class="product-actions">
+                            <button id="add-to-cart" class="product-action cart-add-btn add-to-cart" data-product-id="{{ product.PRODUCT_ID }}" data-quantity="1"
+                            {% if not user %}
+                            data-price="{{ product.PRICE }}"
+                            data-image="{{ product.thumbnailUrl }}"
+                            data-discount="{{ product.DISCOUNT }}"
+                            data-product-name="{{ product.PRODUCT_NAME }}"
+                            {% endif %}
+                            >Add to Cart</button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="prod-section-wrapper">
+                <div class="prod-section-heading text-center">
+                    Similar Products
+                </div>
+                <div>
+                    <div class="card-row">
+                    {% for similar_product in product.getSimilarProducts %}
+                        <div class="card-col">
+                            <div class="card">
+                                <div class="card-img-wrapper">
+                                    <a href="/products/{{ similar_product.PRODUCT_ID }}/">
+                                        <img class="card-img" src="{{ similar_product.thumbnailUrl }}" alt="product-img">
+                                    </a>
+                                </div>
+                                <div class="card-body">
+                                    <div class="card-title">
+                                        <a href="/products/{{ similar_product.PRODUCT_ID }}/">
+                                            {{ similar_product.PRODUCT_NAME }}
+                                        </a>
+                                    </div>
+                                    <div class="sm-stars" style="--rating: {{similar_product.rating.average}};"></div>
+
+                                    <div class="card-footer">
+                                        <div class="card-price">{{ similar_product.PRICE|number_format(2) }} GBP</div>
+                                        <div class="d-flex">
+                                            {% if is_authenticated and not is_trader and not is_admin %}
+                                            <div class="card-cart wishlist-button {% if similar_product.isInWishList %}active{% endif %}" data-product-id="{{similar_product.PRODUCT_ID}}">
+                                                {% if similar_product.isInWishList %}
+                                                    <span class='iconify' data-icon='bi:heart-fill' data-inline='false'></span>
+                                                {% else %}
+                                                    <span class='iconify' data-icon='el:heart-empty' data-inline='false'></span>
+                                                {% endif %}
+                                            </div>
+                                            {% endif %}
+                                            {% if similar_product.isAvailable and not is_trader and not is_admin %}
+                                                <div class="add-to-cart card-cart" data-product-id="{{ similar_product.PRODUCT_ID }}" data-quantity="1"
+                                                {% if not user %}
+                                                data-price="{{ similar_product.PRICE }}"
+                                                data-image="{{ similar_product.thumbnailUrl }}"
+                                                data-discount="{{ similar_product.DISCOUNT }}"
+                                                data-product-name="{{ similar_product.PRODUCT_NAME }}"
+                                                {% endif %}
+                                                >
+                                                    <span></span>
+                                                    <span class="iconify" data-icon="fluent:cart-20-regular" data-inline="false"></span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% else %}
+                        <h4 class="text-center grey-text" style="margin: 40px auto 20px auto;">No similar product found</h4>
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="prod-section-wrapper">
+                <div class="rating-reviews-wrapper">
+                    <div class="prod-section-heading">
+                        Ratings and Reviews
+                    </div>
+                    {% if product.hasUserOrderedProduct %}
+                    <div class="review-form-wrapper" style="margin-top: 20px;">
+                        <div class="give-rating-wrapper">
+                            <div class="give-rating-text">Give your rating</div>
+                            <div class="rating-form-wrapper">
+                                <div id="give-rating" class="xl-stars give-rating-star" style="--rating: {% if product.reviewer.RATING %}{{product.reviewer.RATING}}{% else %}0{% endif %};"></div>
+                                <button id="rate-btn" class="rate-btn disabled">Rate</button>
+                            </div>
+                        </div>
+                        <form id="review-form" action="/ajax/products/{{product.PRODUCT_ID}}/add-review/" method="post">
+                            <div class="queries-form">
+                                <input id="review-inpt" name="review_text" class="query-inpt" type="text" placeholder="Your review about the product...">
+                                <input id="rating-inpt" value="{{product.reviewer.RATING}}" name="rating" type="hidden" />
+                                <button type="submit" class="submit-btn">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                    {% endif %}
+                    <div class="advance-rating-wrapper">
+                        <div class="main-rating-wrapper">
+                            <div>
+                                <span class="rating-value">{{product.rating.average}}</span>
+                                <span class="rating-helper-span">/</span>
+                                <span class="rating-helper-span">5</span>
+                            </div>
+                            <div>
+                                <div class="lg-stars" style="--rating: {{product.rating.average}};"></div>
+                            </div>
+                            <div class="grey-text">
+                                <span>{{product.rating.total}}</span> Rating(s)
+                            </div>
+                        </div>
+                        <div class="rating-summary-wrapper">
+                        {% for rating in product.analyzeRating() %}
+                            <div class="rating-summary-row">
+                                <div class="md-stars" style="--rating: {{rating.RATING_OF}};"></div>
+                                <div class="rating-percent-bar-wrapper">
+                                    <div class="rating-percent-bar" style="width: {{rating.PERCENT}}%;"></div>
+                                </div>
+                                <div class="rating-numbers">{{rating.TOTAL}}</div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    </div>
+                    <div class="reviews-wrapper">
+                        <div class="review-heading">Reviews</div>
+                        {% for review in product.getReviewsOnly() %}
+                            <div class="each-review-row">
+                                <div class="raters-rating-wrapper">
+                                    <div class="md-stars" style="--rating: {{ review.RATING }};"></div>
+                                    <div class="rater-wrapper">
+                                        <span class="rater">by {{review.userName}}</span>
+                                        <span class="isVerified"></span>
+                                    </div>
+                                </div>
+                                <div class="raters-text">
+                                    {{review.REVIEW_TEXT}}
+                                </div>
+                                {% if review.USER_ID == user.user_id %}
+                                <div class="d-flex">
+                                    <div class="edit-item edit-review light-text" data-product-id="{{ product.PRODUCT_ID }}" data-review-text="{{review.REVIEW_TEXT}}">
+                                        <span>Edit</span>
+                                    </div>
+                                    <div class="delete-item delete-review" data-product-id="{{ product.PRODUCT_ID }}">
+                                        <span>Delete</span>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <h4 class="text-center grey-text" style="margin: 40px auto 20px auto;">No reviews yet.</h4>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="prod-section-wrapper">
+                <div class="rating-reviews-wrapper">
+                    <div class="queries-heading">
+                        Queries
+                    </div>
+                    <div class="queries-form-wrapper">
+                        {% if not is_trader %}
+                            <form id="queries-form"  action="/ajax/products/{{product.PRODUCT_ID}}/add-query/" method="post">
+                                <div class="queries-form">
+                                    <input id="question" name="question" class="query-inpt" type="text" placeholder="Your queries..." required>
+                                    {% if not user %}
+                                        <a href="/login/?next=/products/{{ product.PRODUCT_ID }}/" class="submit-btn">Submit</a>
+                                    {% else %}
+                                        <button type="submit" class="submit-btn">Submit</button>
+                                    {% endif %}
+                                </div>
+                                <small id="query_error" class="red-text"></small>
+                            </form>
+                        {% endif %}
+
+                        {% if product.shop.TRADER_ID == user.user_id %}
+                            <form id="answer-form" class="d-none" action="/ajax/products/{{product.PRODUCT_ID}}/add-answer/{{ product.QUERY_ID }}/" method="post">
+                                <small id="answering-to-text" class="grey-text"></small>
+                                <div class="queries-form">
+                                    <input id="answer" name="answer" class="query-inpt" type="text" placeholder="Your answer..." required>
+                                    <button type="submit" class="submit-btn">Submit</button>
+                                </div>
+                                <small id="query_error" class="red-text"></small>
+                            </form>
+                        {% endif %}
+                        
+                        <div class="all-queries-wrapper">
+                            <div class="queries-trader-heading">
+                                Queries answered by trader
+                            </div>
+                            <div id="queries-container" class="queries-row">
+                                {% for query in product.getQueries %}
+                                <div class="each-query" data-query-id="{{ query.QUERY_ID }}">
+                                    <div class="query-wrapper">
+                                        <div class="query-indicator"></div>
+                                        <div>
+                                            <div class="query-text">{{ query.QUESTION }}</div>
+                                            <div class="querer-detail">
+                                                <span>by {{ query.questionBy }}</span>
+                                                <span class="stock-text">{{ query.agoQuestion }}</span>
+                                            </div>
+                                            {% if not query.isAnswered and product.shop.TRADER_ID == user.user_id %}
+                                            <div class="answer-it" data-query-id="{{ query.QUERY_ID }}" data-product-id="{{ query.PRODUCT_ID }}">
+                                                <span class="iconify" data-icon="ri:question-answer-line" data-inline="false"></span>
+                                                <span>Answer</span>
+                                            </div>
+                                            {% endif %}
+
+                                            {% if query.USER_ID == user.user_id %}
+                                            <div class="delete-item delete-query" data-query-id="{{ query.QUERY_ID }}" data-product-id="{{ query.PRODUCT_ID }}">
+                                                <span>Delete</span>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% if query.ANSWER %}
+                                     <div class="query-wrapper answer-wrapper">
+                                        <div class="query-indicator answer"></div>
+                                        <div>
+                                            <div class="query-text">{{query.ANSWER}}.</div>
+                                            <div class="querer-detail">
+                                                <span>by trader</span>
+                                                <span class="stock-text">{{ query.agoAnswer}}</span>
+                                            </div>
+                                            {% if product.getOwnerId == user.user_id %}
+                                            <div class="delete-item delete-answer" data-query-id="{{ query.QUERY_ID }}" data-product-id="{{ query.PRODUCT_ID }}">
+                                                <span>Delete</span>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% else %}
+                                    <h4 id="no-query" class="text-center grey-text" style="margin: 40px auto 20px auto;">No queries yet.</h4>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="/public/js/wishlist.js"></script>
+    <script src="/public/js/shopBySlider.js"></script>
+    <script src="/public/js/imageZoom.js"></script>
+    <script src="/public/js/queries.js"></script>
+    <script src="/public/js/main-product.js"></script>
+    {% if user %}
+    <script src="/public/js/add-to-cart.js"></script>
+    {% else %}
+    <script src="/public/js/add-to-cart-local.js"></script>
+    {% endif %}
+    {% if product.hasUserOrderedProduct %}
+    <script src="/public/js/review-rating.js"></script>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Shops | efoodbasket{% endblock %}
+
+{% block titleLinks %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/trader-request.css' %}">
+{% endblock %}
+
+{% block main %}
+    <div class="max-width-wrapper">
+        <div class="trader-request-wrapper">
+            <div id="message_box"></div>
+            <div class="trader-req-title">
+                Shops
+            </div>
+            {% if shops.count < 2 %}
+            <div class="add-shop-title-wrapper">
+                <a href="{% url 'shop_create' %}" class="add-shop-title-btn add">
+                    <span class="iconify" data-icon="carbon:add-alt" data-inline="false"></span>
+                    Add Shop
+                </a>
+            </div>
+            {% endif %}
+            
+            {% for shop in shops %}
+                <div class="trader-req-user-wrapper add-shop-form-wrapper">
+                    <div class="trader-req-icon-wrapper">
+                        <span class="iconify" data-icon="bi:shop" data-inline="false"></span>
+                    </div>
+                    <div class="shops-row-wrap">
+                        <div class="shop-r-key">
+                            <span class="iconify" data-icon="ic:round-title" data-inline="false"></span>
+                        </div>
+                        <div>
+                            {{ shop.name }}
+                        </div>
+                    </div>
+                    <div class="shops-row-wrap">
+                        <div class="shop-r-key">
+                            <span class="iconify" data-icon="akar-icons:location" data-inline="false"></span>
+                        </div>
+                        <div>
+                            {{ shop.address }}
+                        </div>
+                    </div>
+                    <div class="shops-row-wrap">
+                        <div class="shop-r-key">
+                            <span class="iconify" data-icon="akar-icons:phone" data-inline="false"></span>
+                        </div>
+                        <div>
+                        {{ shop.beautify_contact }}
+                        </div>
+                    </div>
+                    {% if shop.trader.user == user %}
+                    <div class="show-row-btn-wrap">
+                        <a href="{% url 'shop_update' shop.id %}" class="add-shop-add-btn add">
+                            Edit
+                        </a>
+                        <form action="{% url 'shop_delete' shop.id %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="shop_id" value="{{ shop.SHOP_ID }}" />
+                            <button id="add-shop-delete-btn" type="submit" name="delete" class="add-shop-delete-btn" value="delete" onclick="return confirm('ALERT!!! Are you sure you want to delete the shop? It will delete all the products inside this shop.');">Delete</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <div class="text-center" style="margin-bottom: 30px; font-size: 1.1rem; font-weight: bold;">No shop Added</div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

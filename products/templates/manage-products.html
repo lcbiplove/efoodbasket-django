@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if isVisitorOwner %}Manage Products{% else %}Products{% endif %} | efoodbasket{% endblock %}
+
+{% block titleLinks %}
+    <link rel="stylesheet" type="text/css" href="/public/css/stars.css">
+    <link rel="stylesheet" type="text/css" href="/public/css/product-cards.css">
+    <link rel="stylesheet" href="/public/css/omni-slider.min.css">
+    <link rel="stylesheet" href="/public/css/search.css">
+{% endblock %}
+
+{% block main %}
+<div class="max-width-wrapper">
+    <div class="main-search-wrapper">
+        <div class="search-headers">
+            <div class="search-results">
+                {% if isVisitorOwner %}
+                    Manage Products ({{ products|length }})
+                {% else %}
+                    Products by {{trader.fullname}}
+                {% endif %}
+                  
+            </div>
+            {% if is_admin %}
+                <div>Total ({{ products|length }})</div>
+            {% endif %}
+            {% if isVisitorOwner  %}
+                <a href="/trader/add-product/" class="add-product">Add Product</a>
+            {% endif %}
+        </div>
+        <div class="search-body">
+            <div class="filters-wrapper">
+                <form id="filter-form" class="filter-form" action="#" method="get">
+                    <div class="filter-row">
+                        <div class="filter-heading">Rating: </div>
+                        <div class="filter-body">
+                            <div class="filter-stars-row">
+                                <a href="5" class="filter-row-rating {% if selected_rating == 5 %}active{% endif %}">
+                                    <div class="md-stars" style="--rating: 5"></div>
+                                </a>
+                            </div>
+                            <div class="filter-stars-row">
+                                <a href="4" class="d-flex filter-row-rating {% if selected_rating == 4 %}active{% endif %}">
+                                    <div class="md-stars" style="--rating: 4"></div>
+                                    <div class="and-up"> & above</div>
+                                </a>
+                            </div>
+                            <div class="filter-stars-row">
+                                <a href="3" class="d-flex filter-row-rating {% if selected_rating == 3 %}active{% endif %}">
+                                    <div class="md-stars" style="--rating: 3"></div>
+                                    <div class="and-up"> & above</div>
+                                </a>
+                            </div>
+                            <div class="filter-stars-row">
+                                <a href="2" class="d-flex filter-row-rating {% if selected_rating == 2 %}active{% endif %}">
+                                    <div class="md-stars" style="--rating: 2"></div>
+                                    <div class="and-up"> & above</div>
+                                </a>
+                            </div>
+                            <div class="filter-stars-row">
+                                <a href="1" class="d-flex filter-row-rating {% if selected_rating == 1 %}active{% endif %}">
+                                    <div class="md-stars" style="--rating: 1"></div>
+                                    <div class="and-up"> & above</div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-heading">
+                            Price:
+                        </div>
+                        <div class="filter-body">
+                            <div id="myRangeSlider" class="myRangeSlider"></div>
+                            <div class="min-max-wrapper">
+                                <input class="minMaxPrice" type="number" name="minPrice" id="minPrice" placeholder="0" value="{{selected_minPrice}}" readonly>
+                                <input class="minMaxPrice" type="number" name="maxPrice" id="maxPrice" placeholder="200" value="{{selected_maxPrice}}" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-btn">Apply</div>
+                        <div class="filter-reset-btn">Reset</div>
+                    </div>
+                </form>
+            </div>
+            <div class="results-wrapper">
+                <div class="card-row">
+                {% set pageIndex = page-1 %}
+                {% set itemStart = pageIndex*10 %}
+                {% for product in products|slice(itemStart, 10) %}
+                    <div class="card-col-big">
+                        <div class="card-big">
+                            <div class="card-img-wrapper">
+                                <a href="/products/{{product.PRODUCT_ID}}/">
+                                    <img class="card-big-img" src="{{ product.thumbnailUrl }}" alt="product-img">
+                                </a>
+                            </div>
+                            <div class="card-big-body">
+                                <div class="card-big-title">
+                                    <a href="/products/{{product.PRODUCT_ID}}/">
+                                        {{product.PRODUCT_NAME}}
+                                    </a>
+                                </div>
+                                <div class="card-big-star-price">
+                                    <div class="sm-stars" style="--rating: {{product.rating.average}};"></div>
+                                    <div class="card-big-price">{{product.PRICE|number_format(2)}} GBP</div>
+                                </div>
+                                <div class="card-key-value-wrapper">
+                                    <div class="card-key-value-row">
+                                        <div class="card-key">Shop</div>
+                                        <div class="card-value">
+                                            <span class="text-capital">{{product.shop.SHOP_NAME}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-key-value-row">
+                                        <div class="card-key">Stock</div>
+                                        <div class="card-value">
+                                            <span class="light-text">{{product.QUANTITY}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="card-key-value-row">
+                                        <div class="card-key">{{product.ADDED_DATE|date("m M y")}}</div>
+                                    </div>
+                                </div>
+                                <div class="card-big-links">
+
+                                    {% if isVisitorOwner or is_admin %}
+                                        <a href="/trader/products/{{product.PRODUCT_ID}}/edit/" class="card-cart">
+                                            <span class="iconify" data-icon="akar-icons:edit" data-inline="false"></span>
+                                        </a>
+                                        <form action="/trader/products/{{product.PRODUCT_ID}}/delete/?next=/trader/{{product.getOwnerId}}/products/" method="POST">
+                                            <input type="hidden" name="value" value="value" />
+                                            <button class="card-cart" onclick="return confirm('Are you sure you want to delete this product?\n\nIt will remove all data related to this product.');">
+                                                <span></span>
+                                                <span class="iconify" data-icon="mi:delete" data-inline="false"></span>
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                
+                                    {% if not is_trader and not is_admin %}
+                                        {% if is_authenticated %}
+                                        <span class="card-cart wishlist-button {% if product.isInWishList %}active{% endif %}" data-product-id="{{ product.PRODUCT_ID }}">
+                                            {% if product.isInWishList %}
+                                                <span class='iconify' data-icon='bi:heart-fill' data-inline='false'></span>
+                                            {% else %}
+                                                <span class='iconify' data-icon='el:heart-empty' data-inline='false'></span>
+                                            {% endif %}
+                                        </span>
+                                        {% endif %}
+                                        <span class="card-cart add-to-cart" data-product-id="{{ product.PRODUCT_ID }}" data-quantity="1" 
+                                        {% if not is_authenticated %}
+                                        data-price="{{ product.PRICE }}"
+                                        data-image="{{ product.thumbnailUrl }}"
+                                        data-discount="{{ product.DISCOUNT }}"
+                                        data-product-name="{{ product.PRODUCT_NAME }}"
+                                        {% endif %}
+                                        >
+                                            <span></span>
+                                            <span class="iconify cart--" data-icon="fluent:cart-20-regular" data-inline="false"></span>
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <h3 style="margin: auto; margin-top: 60px; color: #777;">No products added yet.</h3>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% if products|length > page*10 %}
+        <div class="more-btn-wrapper">
+            <a id="more-item-btn" href="{{page+1}}" class="more-btn">
+                <span>More Products</span>
+                <span class="iconify" data-icon="ant-design:caret-down-outlined" data-inline="false"></span>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts%}
+    <script src="/public/js/wishlist.js"></script>
+    <script src="/public/js/omni-slider.min.js"></script>
+    <script src="/public/js/main-search.js"></script>
+    {% if user %}
+    <script src="/public/js/add-to-cart.js"></script>
+    {% else %}
+    <script src="/public/js/add-to-cart-local.js"></script>
+    {% endif %}
+{% endblock %}

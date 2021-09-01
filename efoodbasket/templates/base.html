@@ -76,7 +76,7 @@
                                 <span>Dashboard</span>
                             </a>
                         {% endif %}
-                        {% if is_trader %}
+                        {% if user.is_trader %}
                         <a href="/my-dashboard/">
                             <span class="iconify" data-icon="ant-design:dashboard-outlined" data-inline="false"></span>
                             <span>Dashboard</span>
@@ -117,7 +117,7 @@
                         </span>
                         <span>Admin</span>
                     </div>
-                {% elif is_trader %}
+                {% elif user.is_trader %}
                     <div class="cart-account-item not-link">
                         <span class="cart-icon-wrapper">
                         </span>
@@ -143,7 +143,7 @@
                         </span>
                         <span class="cart-icon-title">Admin</span>
                     </div>
-                {% elif is_trader %}
+                {% elif user.is_trader %}
                     <div class="cart-account-item not-link">
                         <span class="cart-icon-wrapper">
                         </span>
@@ -189,7 +189,7 @@
                         <span class="iconify menu-link-icon" data-icon="ant-design:dashboard-outlined" data-inline="false"></span>
                     </a>
                     {% endif %}
-                    {% if is_trader %}
+                    {% if user.is_trader %}
                     a class="menu-link" href="/my-dashboard/">
                         <span>Dashboard</span>
                         <span class="iconify menu-link-icon" data-icon="ant-design:dashboard-outlined" data-inline="false"></span>

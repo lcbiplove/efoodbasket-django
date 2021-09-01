@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Trader Request | efoodbasket{% endblock %}
+
+{% block titleLinks %}
+    <link rel="stylesheet" type="text/css" href="/public/css/trader-request.css">
+{% endblock %}
+
+{% block main %}
+    <div class="max-width-wrapper">
+        <div class="trader-request-wrapper">
+            <div id="message_box"></div>
+            <div class="trader-req-title">
+                Shop
+            </div>
+            
+            <div class="trader-req-user-wrapper add-shop-form-wrapper">
+                <div class="trader-req-icon-wrapper">
+                    <span class="iconify" data-icon="bi:shop" data-inline="false"></span>
+                </div>
+                <div class="shops-row-wrap">
+                    <div class="shop-r-key">
+                        <span class="iconify" data-icon="ic:round-title" data-inline="false"></span>
+                    </div>
+                    <div>
+                        {{ shop.shop_name }}
+                    </div>
+                </div>
+                <div class="shops-row-wrap">
+                    <div class="shop-r-key">
+                        <span class="iconify" data-icon="akar-icons:location" data-inline="false"></span>
+                    </div>
+                    <div>
+                        {{ shop.address }}
+                    </div>
+                </div>
+                <div class="shops-row-wrap">
+                    <div class="shop-r-key">
+                        <span class="iconify" data-icon="akar-icons:phone" data-inline="false"></span>
+                    </div>
+                    <div>
+                    {{ shop.contact|getBeautifulContact }}
+                    </div>
+                </div>
+                {% if shop.trader_id == user.user_id %}
+                <div class="show-row-btn-wrap">
+                    <a href="/trader/shops/{{ shop.shop_id }}/edit/" class="add-shop-add-btn add">
+                        Edit
+                    </a>
+                    <form action="/trader/shops/{{ shop.shop_id }}/delete/" method="POST">
+                        <input type="hidden" name="shop_id" value="{{ shop.SHOP_ID }}" />
+                        <button id="add-shop-delete-btn" type="submit" name="delete" class="add-shop-delete-btn" value="delete" onclick="return confirm('ALERT!!! Are you sure you want to delete the shop? It will delete all the products inside this shop.');">Delete</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Trader Request | efoodbasket{% endblock %}
+
+{% block titleLinks %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/trader-request.css' %}">
+{% endblock %}
+
+{% block main %}
+    <div class="max-width-wrapper">
+        <div class="trader-request-wrapper">
+            <div id="message_box"></div>
+            <div class="trader-req-title">
+                Add Shop
+            </div>
+            <form id="add-shop-form-one" method="POST">
+                {% csrf_token %}
+                <div class="trader-req-user-wrapper add-shop-form-wrapper">
+                    <div class="trader-req-icon-wrapper">
+                        <span class="iconify" data-icon="bi:shop" data-inline="false"></span>
+                    </div>
+                    <div class="add-shop-inpt-div-wrapper">
+                        <label class="add-shop-label" for="nameId">Shop Name</label>
+                        <div class="add-shop-inpt-wrapper">
+                            <input class="add-shop-inpt" type="text" name="name" id="nameId" placeholder="Your shop name..." value="{{form.name.value|default_if_none:""}}">
+                            <small id="err-name" class="red-text">{{ form.name.errors.0 }}</small>
+                        </div>
+                    </div>
+                    <div class="add-shop-inpt-div-wrapper">
+                        <label class="add-shop-label" for="addressId">Shop Address</label>
+                        <div class="add-shop-inpt-wrapper">
+                            <input class="add-shop-inpt" type="text" name="address" id="addressId" placeholder="Your shop address..." value="{{form.address.value|default_if_none:""}}">
+                            <small id="err-address" class="red-text">{{ form.address.errors.0 }}</small>
+                        </div>
+                    </div>
+                    <div class="add-shop-inpt-div-wrapper">
+                        <label class="add-shop-label" for="contactId">Shop Contact</label>
+                        <div class="add-shop-inpt-wrapper">
+                            <input class="add-shop-inpt" type="text" name="contact" id="contactId" placeholder="Your shop contact..." value="{{form.contact.value|default_if_none:""}}">
+                            <small id="err-contact" class="red-text">{{ form.contact.errors.0 }}</small>
+                        </div>
+                    </div>
+                    <div class="add-shop-btm-space"></div>
+                </div>
+                <div class="add-shop-form-btn-wrapper">
+                    <button id="add-shop-btn-one" type="submit" name="add" class="add-shop-add-btn add" value="add">Add</button>
+                </div>
+            </form> 
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="/public/js/add-shop.js"></script>
+{% endblock %}
