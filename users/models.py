@@ -115,7 +115,6 @@ class User(AbstractBaseUser):
 
     @property
     def beautify_contact(self):
-        # $num = '('.substr($phone_number, 0, 3).') '.substr($phone_number, 3, 3).'-'.substr($phone_number,6)
         contact = str(self.contact)
         phone = format(int(contact[:-1]), ",").replace(",", "-") + contact[-1]
         return phone

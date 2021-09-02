@@ -3,7 +3,6 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext as _
 
 
-
 def validate_shop_name(value):
     if len(value) < 4:
         raise ValidationError(

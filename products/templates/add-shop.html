@@ -16,6 +16,7 @@
             </div>
             <form id="add-shop-form-one" method="POST">
                 {% csrf_token %}
+                <input name="trader" type="hidden"/>
                 <div class="trader-req-user-wrapper add-shop-form-wrapper">
                     <div class="trader-req-icon-wrapper">
                         <span class="iconify" data-icon="bi:shop" data-inline="false"></span>
