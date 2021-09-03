@@ -19,3 +19,6 @@ class TraderRequired(UserPassesTestMixin):
 
     def test_func(self):
         return self.request.user.is_trader
+    
+    def handle_no_permission(self):
+        return redirect('/')

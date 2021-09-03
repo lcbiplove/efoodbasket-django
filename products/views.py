@@ -27,6 +27,13 @@ class ShopCreateView(SuccessMessageMixin, TraderRequired, CreateView):
         form.instance.trader = self.request.user.trader
         return form
 
+    def get_success_url(self):
+        success_url = super().get_success_url()
+        next_page = self.request.GET.get('next')
+        if next_page:
+            success_url = next_page
+        return success_url
+
 class ShopUpdateView(SuccessMessageMixin, ShopOwnerRequired, UpdateView):
     model = Shop
     template_name = 'edit-shop.html'
@@ -53,6 +60,12 @@ class ProductCreateView(SuccessMessageMixin, TraderRequired, CreateView):
     success_message = 'Product Added successfully!'
     success_url = reverse_lazy('home')
 
+    def dispatch(self, request, *args, **kwargs):
+        if not Shop.objects.filter(trader__user__id=self.request.user.id).exists():
+            messages.add_message(request, messages.INFO, 'You need to have at least a shop to add product.', 'info')
+            return redirect(reverse_lazy('shop_create') + '?next=' + reverse_lazy('product_create'))
+        return super().dispatch(request, *args, **kwargs)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['shops'] = Shop.objects.filter(trader__user__id=self.request.user.id)
