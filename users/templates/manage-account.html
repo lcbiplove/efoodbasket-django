@@ -17,7 +17,7 @@
             </div>
            {% if user.is_trader %}
             <div class="add-shop-title-wrapper">
-                <a href="/trader/add-product/" class="add-shop-title-btn add">
+                <a href="{% url 'product_create' %}" class="add-shop-title-btn add">
                     <span class="iconify" data-icon="carbon:add-alt" data-inline="false"></span>
                     Product
                 </a>

@@ -3,6 +3,7 @@ from django.db import models
 from django.urls import reverse
 from . import validators
 from django.core.exceptions import ValidationError
+from django.core.validators import MinLengthValidator
 
 class Shop(models.Model):
     name = models.CharField(max_length=40, validators=[validators.validate_shop_name])               
@@ -36,7 +37,7 @@ class Shop(models.Model):
 
 
 class ProductCategory(models.Model):
-    name = models.CharField(max_length=40)
+    name = models.CharField(max_length=40, unique=True)
     description = models.TextField(max_length=2000)
 
     class Meta:
@@ -47,12 +48,12 @@ class ProductCategory(models.Model):
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, validators=[MinLengthValidator(3)])
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.IntegerField()
     availability = models.BooleanField(default=True)
-    description = models.TextField(max_length=2000)
-    allergy_information = models.TextField(max_length=2000, null=True)
+    description = models.TextField(max_length=2000, validators=[MinLengthValidator(100)])
+    allergy_information = models.TextField(max_length=2000, null=True, blank=True)
     discount = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
@@ -60,3 +61,11 @@ class Product(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('home')
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_images')
+    image = models.ImageField(upload_to='products/')
+

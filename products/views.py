@@ -1,13 +1,13 @@
 from django.core.checks import messages
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView
-from .models import Shop
+from .models import ProductCategory, Shop, ProductImage
 from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 from .permissions import ShopOwnerRequired
 from users.permissions import TraderRequired
 from django.contrib import messages
-
+from .forms import CreateProductForm
 
 class ShopCreateView(SuccessMessageMixin, TraderRequired, CreateView):
     model = Shop
@@ -45,3 +45,25 @@ class ShopListView(ListView):
 class ShopDeleteView(ShopOwnerRequired, DeleteView):
     model = Shop
     success_url = reverse_lazy('shop_list')
+
+
+class ProductCreateView(SuccessMessageMixin, TraderRequired, CreateView):
+    form_class = CreateProductForm
+    template_name = 'add-product.html'
+    success_message = 'Product Added successfully!'
+    success_url = reverse_lazy('home')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['shops'] = Shop.objects.filter(trader__user__id=self.request.user.id)
+        context['categories'] = ProductCategory.objects.all()
+        return context
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.trader = self.request.user.trader
+        self.object.save()
+        img_files = form.files.getlist('image')
+        for file in img_files:
+            ProductImage.objects.create(image=file, product=self.object)
+        return super().form_valid(form)
