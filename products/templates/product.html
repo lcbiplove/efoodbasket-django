@@ -202,7 +202,8 @@
                                 <button id="rate-btn" class="rate-btn disabled">Rate</button>
                             </div>
                         </div>
-                        <form id="review-form" action="/ajax/products/{{product.PRODUCT_ID}}/add-review/" method="post">
+                        <form id="review-form" action="/ajax/products/{{product.PRODUCT_ID}}/add-review/" method="POST">
+                            {% csrf_token %}
                             <div class="queries-form">
                                 <input id="review-inpt" name="review_text" class="query-inpt" type="text" placeholder="Your review about the product...">
                                 <input id="rating-inpt" value="{{product.reviewer.RATING}}" name="rating" type="hidden" />
@@ -274,12 +275,13 @@
                         Queries
                     </div>
                     <div class="queries-form-wrapper">
-                        {% if not is_trader %}
-                            <form id="queries-form"  action="/ajax/products/{{product.id}}/add-query/" method="post">
+                        {% if not user.is_trader %}
+                            <form id="queries-form"  action="{% url 'query_create' product.id %}" method="POST">
+                                {% csrf_token %}
                                 <div class="queries-form">
                                     <input id="question" name="question" class="query-inpt" type="text" placeholder="Your queries..." required>
-                                    {% if not user %}
-                                        <a href="/login/?next=/products/{{ product.id }}/" class="submit-btn">Submit</a>
+                                    {% if not user.is_authenticated %}
+                                        <a href="{% url 'login' %}?next={% url 'product_detail' product.id %}" class="submit-btn">Submit</a>
                                     {% else %}
                                         <button type="submit" class="submit-btn">Submit</button>
                                     {% endif %}
@@ -288,8 +290,9 @@
                             </form>
                         {% endif %}
 
-                        {% if product.shop.TRADER_ID == user.user_id %}
+                        {% if product.shop.trader.id == user.trader.id %}
                             <form id="answer-form" class="d-none" action="/ajax/products/{{product.id}}/add-answer/{{ product.QUERY_ID }}/" method="post">
+                                {% csrf_token %}
                                 <small id="answering-to-text" class="grey-text"></small>
                                 <div class="queries-form">
                                     <input id="answer" name="answer" class="query-inpt" type="text" placeholder="Your answer..." required>
@@ -304,41 +307,41 @@
                                 Queries answered by trader
                             </div>
                             <div id="queries-container" class="queries-row">
-                                {% for query in product.getQueries %}
-                                <div class="each-query" data-query-id="{{ query.QUERY_ID }}">
+                                {% for query in product.query_set.all %}
+                                <div class="each-query" data-query-id="{{ query.id }}">
                                     <div class="query-wrapper">
                                         <div class="query-indicator"></div>
                                         <div>
-                                            <div class="query-text">{{ query.QUESTION }}</div>
+                                            <div class="query-text">{{ query.question }}</div>
                                             <div class="querer-detail">
-                                                <span>by {{ query.questionBy }}</span>
-                                                <span class="stock-text">{{ query.agoQuestion }}</span>
+                                                <span>by {{ query.user.fullname }}</span>
+                                                <span class="stock-text">{{ query.question_date|timesince }}</span>
                                             </div>
-                                            {% if not query.isAnswered and product.shop.TRADER_ID == user.user_id %}
-                                            <div class="answer-it" data-query-id="{{ query.QUERY_ID }}" data-product-id="{{ query.PRODUCT_ID }}">
+                                            {% if not query.is_answered and product.shop.trader.id == user.trader.id %}
+                                            <div class="answer-it" data-query-id="{{ query.id }}" data-product-id="{{ product.id }}">
                                                 <span class="iconify" data-icon="ri:question-answer-line" data-inline="false"></span>
                                                 <span>Answer</span>
                                             </div>
                                             {% endif %}
 
-                                            {% if query.USER_ID == user.user_id %}
-                                            <div class="delete-item delete-query" data-query-id="{{ query.QUERY_ID }}" data-product-id="{{ query.PRODUCT_ID }}">
+                                            {% if query.user.id == user.id %}
+                                            <div class="delete-item delete-query" data-query-id="{{ query.id }}" data-product-id="{{ product.id }}">
                                                 <span>Delete</span>
                                             </div>
                                             {% endif %}
                                         </div>
                                     </div>
-                                    {% if query.ANSWER %}
+                                    {% if query.is_answered %}
                                      <div class="query-wrapper answer-wrapper">
                                         <div class="query-indicator answer"></div>
                                         <div>
-                                            <div class="query-text">{{query.ANSWER}}.</div>
+                                            <div class="query-text">{{query.answer}}.</div>
                                             <div class="querer-detail">
                                                 <span>by trader</span>
-                                                <span class="stock-text">{{ query.agoAnswer}}</span>
+                                                <span class="stock-text">{{ query.answer_date|timesince }}</span>
                                             </div>
-                                            {% if product.getOwnerId == user.user_id %}
-                                            <div class="delete-item delete-answer" data-query-id="{{ query.QUERY_ID }}" data-product-id="{{ query.PRODUCT_ID }}">
+                                            {% if product.shop.trader.user.id == user.id %}
+                                            <div class="delete-item delete-answer" data-query-id="{{ query.id }}" data-product-id="{{ product.id }}">
                                                 <span>Delete</span>
                                             </div>
                                             {% endif %}

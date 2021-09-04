@@ -24,3 +24,11 @@ class TraderRequired(LoginRequiredMixin, UserPassesTestMixin):
     
     def handle_no_permission(self):
         return redirect('/')
+
+class CustomerRequired(LoginRequiredMixin, UserPassesTestMixin):
+
+    def test_func(self):
+        return self.request.user.is_customer
+    
+    def handle_no_permission(self):
+        return redirect('/')

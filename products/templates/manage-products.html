@@ -18,7 +18,7 @@
                 {% if is_visitor_owner %}
                     Manage Products ({{ products|length }})
                 {% else %}
-                    Products by {{user.fullname}}
+                    Products by {{trader.user.fullname}}
                 {% endif %}
             </div>
             {% if is_admin %}

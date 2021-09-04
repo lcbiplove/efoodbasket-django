@@ -19,6 +19,7 @@ window.addEventListener("load", function(){
 
     var onQuerySuccess = function(response) {
         hideBigLoader();
+        console.log(response);
 
         try {
             var data = JSON.parse(response);
@@ -27,10 +28,10 @@ window.addEventListener("load", function(){
             if(data.hasOwnProperty("error")){
                 queryError.innerHTML = data.error;
             } 
-            else if(data.hasOwnProperty("data")) {
-                var obj = data.data;
+            else {
                 if(noQuery) noQuery.remove();
-                var addedRow = "<div class='each-query' data-query-id='"+obj.QUERY_ID+"'><div class='query-wrapper'><div class='query-indicator'></div><div><div class='query-text'>"+obj.QUESTION+"</div><div class='querer-detail'><span>by "+obj.QUESTION_BY+"</span><span class='stock-text'>"+obj.AGO_QUESTION+"</span></div><div class='delete-item delete-query' data-query-id='"+obj.QUERY_ID+"' data-product-id="+obj.PRODUCT_ID+"><span>Delete</span></div></div></div></div>";
+
+                var addedRow = "<div class='each-query' data-query-id='"+data.query_id+"'><div class='query-wrapper'><div class='query-indicator'></div><div><div class='query-text'>"+data.question+"</div><div class='querer-detail'><span>by "+data.question_by+"</span><span class='stock-text'>"+data.time_since+"</span></div><div class='delete-item delete-query' data-query-id='"+data.query_id+"' data-product-id="+data.product_id+"><span>Delete</span></div></div></div></div>";
                 queriesContainer.insertAdjacentHTML("afterbegin", addedRow);
                 queryForm.reset();
                 deleteQueriesElems = document.querySelectorAll(".delete-query");
@@ -48,7 +49,9 @@ window.addEventListener("load", function(){
     
             var action = queryForm.getAttribute("action");
             var data = new FormData();
+            // getCookie('csrftoken');
             data.append("question", question.value);
+            data.append("csrfmiddlewaretoken", getCookie('csrftoken'));
             ajax("POST", action, data, onQuerySuccess);
         }
     }
@@ -79,7 +82,6 @@ window.addEventListener("load", function(){
 
     var onAnswerSuccess = function(response) {
         hideBigLoader();
-
         try {
             var data = JSON.parse(response);
 
@@ -87,10 +89,9 @@ window.addEventListener("load", function(){
             if(data.hasOwnProperty("error")){
                 queryError.innerHTML = data.error;
             } 
-            else if(data.hasOwnProperty("data")) {
-                var obj = data.data;
-                var answerRow = "<div class='query-wrapper answer-wrapper'><div class='query-indicator answer'></div><div><div class='query-text'>"+obj.ANSWER+"</div><div class='querer-detail'><span>by trader</span><span class='stock-text'> "+obj.AGO_ANSWER+"</span></div><div class='delete-item delete-answer' data-query-id='"+obj.QUERY_ID+"' data-product-id="+obj.PRODUCT_ID+"><span>Delete</span></div></div></div></div>";
-                var eachRow = document.querySelector(".each-query[data-query-id='"+query_id+"']");
+            else {
+                var answerRow = "<div class='query-wrapper answer-wrapper'><div class='query-indicator answer'></div><div><div class='query-text'>"+data.answer+"</div><div class='querer-detail'><span>by trader</span><span class='stock-text'> "+data.time_since+"</span></div><div class='delete-item delete-answer' data-query-id='"+data.query_id+"' data-product-id="+data.product_id+"><span>Delete</span></div></div></div></div>";
+                var eachRow = document.querySelector(".each-query[data-query-id='"+data.query_id+"']");
                 eachRow.innerHTML += answerRow;
                 answerForm.reset();
                 answeringToText.innerHTML = "";
@@ -117,6 +118,7 @@ window.addEventListener("load", function(){
             var action = "/ajax/products/"+product_id+"/add-answer/"+query_id+"/";
             var data = new FormData();
             data.append("answer", answer.value);
+            data.append("csrfmiddlewaretoken", getCookie('csrftoken'));
             ajax("POST", action, data, onAnswerSuccess);
         }
     }
@@ -143,6 +145,7 @@ window.addEventListener("load", function(){
 
                 var action = "/ajax/products/"+product_id+"/delete-query/"+query_id+"/";
                 var data = new FormData();
+                data.append("csrfmiddlewaretoken", getCookie('csrftoken'));
                 data.append("value", "value");
                 ajax("POST", action, data, onDeleteSuccess);
             }
@@ -159,6 +162,7 @@ window.addEventListener("load", function(){
 
                 var action = "/ajax/products/"+product_id+"/delete-answer/"+query_id+"/";
                 var data = new FormData();
+                data.append("csrfmiddlewaretoken", getCookie('csrftoken'));
                 data.append("value", "value");
                 ajax("POST", action, data, onDeleteAnswerSuccess);
             }

@@ -1,4 +1,4 @@
-from users.models import Trader
+from users.models import Trader, User
 from django.db import models
 from django.urls import reverse
 from . import validators
@@ -81,3 +81,44 @@ class ProductImage(models.Model):
     def __str__(self) -> str:
         return self.image.url
 
+class Query(models.Model):
+    question = models.CharField(max_length=2000, validators=[MinLengthValidator(10)])
+    answer = models.CharField(max_length=2000, null=True, blank=True)
+    question_date = models.DateTimeField(auto_now_add=True)
+    answer_date = models.DateTimeField(null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name_plural = 'Queries'
+        ordering = ['-question_date', '-answer_date']
+
+    def __str__(self) -> str:
+        return self.question
+
+    def is_answered(self):
+        return self.answer
+
+    
+
+class Review(models.Model):
+    review = models.CharField(max_length=2000, validators=[MinLengthValidator(10)])
+    added_date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_reviews')
+    product = models.ForeignKey(User, on_delete=models.CASCADE, related_name='product_reviews')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'product'], name='unique_for_review')
+        ]
+
+class Rating(models.Model):
+    rating = models.DecimalField(max_digits=2, decimal_places=1)
+    added_date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_ratings')
+    product = models.ForeignKey(User, on_delete=models.CASCADE, related_name='product_ratings')
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'product'], name='unique_for_rating')
+        ]

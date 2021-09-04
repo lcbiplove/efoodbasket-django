@@ -1,14 +1,16 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from users.models import Trader
 from django.core.checks import messages
+from django.http.response import JsonResponse
 from django.shortcuts import redirect
-from django.views.generic import ListView, CreateView, DeleteView, UpdateView, TemplateView, DetailView
-from .models import Product, ProductCategory, Shop, ProductImage
+from django.views.generic import ListView, CreateView, DeleteView, UpdateView, DetailView
+from .models import Product, ProductCategory, Query, Shop, ProductImage
 from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
-from .permissions import ShopOwnerRequired, ProductOwnerRequired
-from users.permissions import TraderRequired
+from .permissions import ShopOwnerRequired, ProductOwnerRequired, QuestionOwnerRequired, AnswerOwnerRequired
+from users.permissions import TraderRequired, CustomerRequired
 from django.contrib import messages
 from .forms import CreateProductForm
+from django.utils import timezone
 
 class ShopCreateView(TraderRequired, SuccessMessageMixin, CreateView):
     model = Shop
@@ -17,7 +19,7 @@ class ShopCreateView(TraderRequired, SuccessMessageMixin, CreateView):
     success_message = 'Shop Added successfully!'
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
+        if request.user.is_authenticated and request.user.is_trader:
             shop_count = Shop.objects.filter(trader__id=request.user.trader.id).count()
             if shop_count >= 2:
                 messages.add_message(request, messages.INFO, 'You can only add upto 2 shops.', 'info')
@@ -91,7 +93,8 @@ class ManageProductView(TraderRequired, ListView):
     context_object_name = 'products'
     extra_context = {'is_visitor_owner': True}
 
-class VisitTraderView(TemplateView):
+class VisitTraderView(DetailView):
+    model = Trader
     template_name = 'manage-products.html'
     context_object_name = 'trader'
 
@@ -130,3 +133,81 @@ class ProductDeleteView(SuccessMessageMixin, ProductOwnerRequired, DeleteView):
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         return redirect(self.success_url)
+
+class QueryCreateView(CustomerRequired, CreateView):
+    model = Query
+    fields = ['question']
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.user = self.request.user
+        self.object.product = Product.objects.get(pk=self.kwargs['pk'])
+        self.object.save()
+        payload = self.get_response_data()
+        return JsonResponse(payload)
+
+    def form_invalid(self, form):
+        return JsonResponse({
+            'error': form['question'].errors[0]
+        })
+
+    def get_response_data(self) -> dict:
+        data = {}
+        data['query_id'] = self.object.id
+        data['question'] = self.object.question
+        data['question_by'] = self.object.user.fullname
+        data['time_since'] = 'just now'
+        data['product_id'] = self.object.product.id
+        return data
+
+
+class QueryDeleteView(QuestionOwnerRequired, DeleteView):
+    model = Query
+    success_url = reverse_lazy('product_manage')
+    http_method_names = ['post']
+
+    def http_method_not_allowed(self, request, *args, **kwargs):
+        return redirect(self.success_url)
+
+    def delete(self, request, *args, **kwargs):
+        self.get_object().delete()
+        payload = {'delete': 'ok'}
+        return JsonResponse(payload)
+
+class AnswerUpdateView(AnswerOwnerRequired, UpdateView):
+    model = Query
+    fields = ['answer']
+    http_method_names = ['post']
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.answer_date = timezone.now()
+        self.object.save()
+        payload = self.get_response_data()
+        return JsonResponse(payload)
+
+    def form_invalid(self, form):
+        return JsonResponse({
+            'error': form['answer'].errors[0]
+        })
+
+    def get_response_data(self) -> dict:
+        data = {}
+        data['query_id'] = self.object.id
+        data['answer'] = self.object.answer
+        data['time_since'] = 'just now'
+        data['product_id'] = self.object.product.id
+        return data
+
+class AnswerDeleteView(AnswerOwnerRequired, UpdateView):
+    model = Query
+    fields = ['answer']
+    http_method_names = ['post']
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.answer = None
+        self.object.answer_date = None
+        self.object.save()
+        payload = {'delete': 'ok'}
+        return JsonResponse(payload)
