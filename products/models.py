@@ -63,9 +63,21 @@ class Product(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('home')
+        return reverse('product_detail', kwargs={'pk': self.id})
+
+    def thumbnail_url(self):
+        return self.product_images.all().first()
+
+    def get_similar_products(self):
+        return Product.objects.filter(category__id=self.category.id).exclude(id=self.id)[:4]
+
+    def is_in_wish_list(self):
+        return False
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_images')
     image = models.ImageField(upload_to='products/')
+
+    def __str__(self) -> str:
+        return self.image.url
 

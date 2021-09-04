@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}{% if isVisitorOwner %}Manage Products{% else %}Products{% endif %} | efoodbasket{% endblock %}
+{% block title %}{% if is_visitor_owner %}Manage Products{% else %}Products{% endif %} | efoodbasket{% endblock %}
 
 {% block titleLinks %}
-    <link rel="stylesheet" type="text/css" href="/public/css/stars.css">
-    <link rel="stylesheet" type="text/css" href="/public/css/product-cards.css">
-    <link rel="stylesheet" href="/public/css/omni-slider.min.css">
-    <link rel="stylesheet" href="/public/css/search.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/stars.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/product-cards.css' %}">
+    <link rel="stylesheet" href="{% static 'css/omni-slider.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/search.css' %}">
 {% endblock %}
 
 {% block main %}
@@ -14,18 +15,17 @@
     <div class="main-search-wrapper">
         <div class="search-headers">
             <div class="search-results">
-                {% if isVisitorOwner %}
+                {% if is_visitor_owner %}
                     Manage Products ({{ products|length }})
                 {% else %}
-                    Products by {{trader.fullname}}
+                    Products by {{user.fullname}}
                 {% endif %}
-                  
             </div>
             {% if is_admin %}
                 <div>Total ({{ products|length }})</div>
             {% endif %}
-            {% if isVisitorOwner  %}
-                <a href="/trader/add-product/" class="add-product">Add Product</a>
+            {% if is_visitor_owner  %}
+                <a href="{% url 'product_create' %}" class="add-product">Add Product</a>
             {% endif %}
         </div>
         <div class="search-body">
@@ -85,50 +85,48 @@
             </div>
             <div class="results-wrapper">
                 <div class="card-row">
-                {% set pageIndex = page-1 %}
-                {% set itemStart = pageIndex*10 %}
-                {% for product in products|slice(itemStart, 10) %}
+                {% for product in products %}
                     <div class="card-col-big">
                         <div class="card-big">
                             <div class="card-img-wrapper">
-                                <a href="/products/{{product.PRODUCT_ID}}/">
-                                    <img class="card-big-img" src="{{ product.thumbnailUrl }}" alt="product-img">
+                                <a href="{% url 'product_detail' product.id %}">
+                                    <img class="card-big-img" src="{{ product.thumbnail_url }}" alt="product-img">
                                 </a>
                             </div>
                             <div class="card-big-body">
                                 <div class="card-big-title">
-                                    <a href="/products/{{product.PRODUCT_ID}}/">
-                                        {{product.PRODUCT_NAME}}
+                                    <a href="{% url 'product_detail' product.id %}">
+                                        {{product.name}}
                                     </a>
                                 </div>
                                 <div class="card-big-star-price">
                                     <div class="sm-stars" style="--rating: {{product.rating.average}};"></div>
-                                    <div class="card-big-price">{{product.PRICE|number_format(2)}} GBP</div>
+                                    <div class="card-big-price">{{product.price|floatformat:2}} GBP</div>
                                 </div>
                                 <div class="card-key-value-wrapper">
                                     <div class="card-key-value-row">
                                         <div class="card-key">Shop</div>
                                         <div class="card-value">
-                                            <span class="text-capital">{{product.shop.SHOP_NAME}}</span>
+                                            <span class="text-capital">{{product.shop.name}}</span>
                                         </div>
                                     </div>
                                     <div class="card-key-value-row">
                                         <div class="card-key">Stock</div>
                                         <div class="card-value">
-                                            <span class="light-text">{{product.QUANTITY}}</span>
+                                            <span class="light-text">{{product.quantity}}</span>
                                         </div>
                                     </div>
                                     <div class="card-key-value-row">
-                                        <div class="card-key">{{product.ADDED_DATE|date("m M y")}}</div>
+                                        <div class="card-key">{{product.added_date|date:"m M y"}}</div>
                                     </div>
                                 </div>
                                 <div class="card-big-links">
-
-                                    {% if isVisitorOwner or is_admin %}
-                                        <a href="/trader/products/{{product.PRODUCT_ID}}/edit/" class="card-cart">
+                                    {% if is_visitor_owner or user.is_admin %}
+                                        <a href="{% url 'product_update' product.id %}" class="card-cart">
                                             <span class="iconify" data-icon="akar-icons:edit" data-inline="false"></span>
                                         </a>
-                                        <form action="/trader/products/{{product.PRODUCT_ID}}/delete/?next=/trader/{{product.getOwnerId}}/products/" method="POST">
+                                        <form action="{% url 'product_delete' product.id %}" method="POST">
+                                            {% csrf_token %}
                                             <input type="hidden" name="value" value="value" />
                                             <button class="card-cart" onclick="return confirm('Are you sure you want to delete this product?\n\nIt will remove all data related to this product.');">
                                                 <span></span>
@@ -137,7 +135,7 @@
                                         </form>
                                     {% endif %}
                                 
-                                    {% if not is_trader and not is_admin %}
+                                    {% if not user.is_trader and not user.is_admin %}
                                         {% if is_authenticated %}
                                         <span class="card-cart wishlist-button {% if product.isInWishList %}active{% endif %}" data-product-id="{{ product.PRODUCT_ID }}">
                                             {% if product.isInWishList %}
@@ -147,12 +145,12 @@
                                             {% endif %}
                                         </span>
                                         {% endif %}
-                                        <span class="card-cart add-to-cart" data-product-id="{{ product.PRODUCT_ID }}" data-quantity="1" 
+                                        <span class="card-cart add-to-cart" data-product-id="{{ product.id }}" data-quantity="1" 
                                         {% if not is_authenticated %}
-                                        data-price="{{ product.PRICE }}"
-                                        data-image="{{ product.thumbnailUrl }}"
-                                        data-discount="{{ product.DISCOUNT }}"
-                                        data-product-name="{{ product.PRODUCT_NAME }}"
+                                        data-price="{{ product.price }}"
+                                        data-image="{{ product.thumbnail_url }}"
+                                        data-discount="{{ product.discount }}"
+                                        data-product-name="{{ product.name }}"
                                         {% endif %}
                                         >
                                             <span></span>
@@ -163,15 +161,15 @@
                             </div>
                         </div>
                     </div>
-                {% else %}
+                {% empty %}
                     <h3 style="margin: auto; margin-top: 60px; color: #777;">No products added yet.</h3>
                 {% endfor %}
                 </div>
             </div>
         </div>
-        {% if products|length > page*10 %}
+        {% if products %}
         <div class="more-btn-wrapper">
-            <a id="more-item-btn" href="{{page+1}}" class="more-btn">
+            <a id="more-item-btn" href="{{page}}" class="more-btn">
                 <span>More Products</span>
                 <span class="iconify" data-icon="ant-design:caret-down-outlined" data-inline="false"></span>
             </a>
@@ -182,12 +180,12 @@
 {% endblock %}
 
 {% block scripts%}
-    <script src="/public/js/wishlist.js"></script>
-    <script src="/public/js/omni-slider.min.js"></script>
-    <script src="/public/js/main-search.js"></script>
+    <script src="{% static 'js/wishlist.js' %}"></script>
+    <script src="{% static 'js/omni-slider.min.js' %}"></script>
+    <script src="{% static 'js/main-search.js' %}"></script>
     {% if user %}
-    <script src="/public/js/add-to-cart.js"></script>
+    <script src="{% static 'js/add-to-cart.js' %}"></script>
     {% else %}
-    <script src="/public/js/add-to-cart-local.js"></script>
+    <script src="{% static 'js/add-to-cart-local.js' %}"></script>
     {% endif %}
 {% endblock %}

@@ -1,6 +1,5 @@
-from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import redirect
-
 
 class UserNotRequired(UserPassesTestMixin):
     
@@ -10,12 +9,15 @@ class UserNotRequired(UserPassesTestMixin):
     def handle_no_permission(self):
         return redirect('/')
 
-class AdminPermission(UserPassesTestMixin):
+class AdminPermission(LoginRequiredMixin, UserPassesTestMixin):
     
     def test_func(self):
         return self.request.user.is_staff
+    
+    def handle_no_permission(self):
+        return redirect('/')
 
-class TraderRequired(UserPassesTestMixin):
+class TraderRequired(LoginRequiredMixin, UserPassesTestMixin):
 
     def test_func(self):
         return self.request.user.is_trader

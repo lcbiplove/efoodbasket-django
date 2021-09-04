@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Product{% endblock %}
+{% block title %}Product | efoodbasket{% endblock %}
 
 {% block titleLinks %}
-    <link rel="stylesheet" href="/public/css/stars.css">
-    <link rel="stylesheet" type="text/css" href="/public/css/product-cards.css">
-    <link rel="stylesheet" href="/public/css/product.css">
+    <link rel="stylesheet" href="{% static 'css/stars.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/product-cards.css' %}">
+    <link rel="stylesheet" href="{% static 'css/product.css' %}">
 {% endblock %}
 
 {% block main %}
@@ -15,13 +16,13 @@
             <div class="products-main-div-wrapper">
                 <div class="product-gallery">
                     <div class="product-preiview-img-wrapper">
-                        <img id="preview-img" class="product-preiview-img" src="{{ product.thumbnailUrl }}" alt="product-img">
+                        <img id="preview-img" class="product-preiview-img" src="{{ product.thumbnail_url }}" alt="product-img">
                     </div>
                     <div class="product-img-options">
                         <div class="shop-by-images-wrapper">
                             <div class="shop-by-images-container">
-                                {% for image_name in product.getProductImages %}
-                                    <img class="product-img-indicator" src="/media/products/{{ image_name }}" alt="{{ image_name }}">
+                                {% for image_name in product.product_images.all %}
+                                    <img class="product-img-indicator" src="{{ image_name }}" alt="{{ image_name }}">
                                 {% endfor %}
                             </div>
                             <div class="shop-by-controls d-none">
@@ -38,7 +39,7 @@
                 <div class="product-details">
                     <div id="zoom-img-result" class="zoom-img-result"></div>
                     <div class="product-title">
-                        {{ product.PRODUCT_NAME }}
+                        {{ product.name }}
                     </div>
                     <div class="rating-share-wrapper">
                         <div>
@@ -50,10 +51,10 @@
                             </div>
                             <div class="d-flex">
                                 <div>
-                                    <a class="blue-text" href="/trader/{{product.getOwnerId}}/products/">Visit Trader</a>
+                                    <a class="blue-text" href="{% url 'visit_trader' product.shop.trader.id %}">Visit Trader</a>
                                 </div>
-                                <div id="stock-count" class="stock-text" data-stock-count="{{product.QUANTITY}}">
-                                {% if product.isAvailable %}
+                                <div id="stock-count" class="stock-text" data-stock-count="{{product.quantity}}">
+                                {% if product.availability %}
                                     In Stock 
                                 {% else %}
                                     Out of Stock
@@ -62,20 +63,21 @@
                             </div>
                         </div>
                         <div class="d-flex">
-                            {% if product.getOwnerId == user.user_id or is_admin %}
-                                <a href="/trader/products/{{product.PRODUCT_ID}}/edit/" class="edit-delete-product">
+                            {% if product.shop.trader.user.id == user.id or user.is_admin %}
+                                <a href="{% url 'product_update' product.id %}" class="edit-delete-product">
                                     <span class="iconify" data-icon="akar-icons:edit" data-inline="false"></span>
                                 </a>
-                                <form action="/trader/products/{{product.PRODUCT_ID}}/delete/" method="POST">
+                                <form action="{% url 'product_delete' product.id %}" method="POST">
+                                    {% csrf_token %}
                                     <input type="hidden" name="value" value="value" />
                                     <button type="submit" id="delete-product" class="edit-delete-product ml-5" onclick="return confirm('Are you sure you want to delete this product?\n\nIt will remove all data related to this product.');">
                                         <span class="iconify" data-icon="mi:delete" data-inline="false"></span>
                                     </button>
                                 </form>
                             {% else %}
-                            {% if user and is_customer %}
-                                <div id="wish-product" class="share-product wishlist-button {% if product.isInWishList %}active{% endif %}" data-product-id="{{product.PRODUCT_ID}}">
-                                    {% if product.isInWishList %}
+                            {% if user.is_authenticated and user.is_customer %}
+                                <div id="wish-product" class="share-product wishlist-button {% if product.is_in_wish_list %}active{% endif %}" data-product-id="{{product.id}}">
+                                    {% if product.is_in_wish_list %}
                                         <span class='iconify' data-icon='bi:heart-fill' data-inline='false'></span>
                                     {% else %}
                                         <span class='iconify' data-icon='el:heart-empty' data-inline='false'></span>
@@ -90,38 +92,38 @@
                     </div>
                     <div class="price-wrapper">
                         <div>
-                            Price: {{ product.PRICE|number_format(2) }} GBP 
+                            Price: {{ product.price|floatformat:2 }} GBP 
                         </div>
-                        {% if product.DISCOUNT %}
+                        {% if product.discount %}
                         <div style="font-size: 1rem; margin-top: 10px; color: var(--light-green);">
-                            {{product.DISCOUNT}}% off
+                            {{product.discount}}% off
                         </div>
                         {% endif %}
                     </div>
                     <div class="product-desc">
-                    {{ product.DESCRIPTION }}
+                    {{ product.description }}
                     </div>
                     <div class="allery-inform">
-                    {{ product.ALLERGY_INFORMATION }}
+                    {{ product.allergy_information }}
                     </div>
                     <div class="quantity-wrapper">
                         <span>Quantity</span>
-                        {% if is_trader or is_admin %}
-                        <span id="quantity-value" class="quantity">{{ product.QUANTITY }}</span>
+                        {% if user.is_trader or user.is_admin %}
+                        <span id="quantity-value" class="quantity">{{ product.quantity }}</span>
                         {% else %}
                         <button id="subtract-quantity" class="quantity-btn">-</button>
                         <span id="quantity-value" class="quantity">1</span>
                         <button id="add-quantity" class="quantity-btn">+</button>
                         {% endif %}
                     </div>
-                    {% if product.isAvailable and not is_trader and not is_admin %}
+                    {% if product.availability and not user.is_trader and not user.is_admin %}
                         <div class="product-actions">
-                            <button id="add-to-cart" class="product-action cart-add-btn add-to-cart" data-product-id="{{ product.PRODUCT_ID }}" data-quantity="1"
+                            <button id="add-to-cart" class="product-action cart-add-btn add-to-cart" data-product-id="{{ product.id }}" data-quantity="1"
                             {% if not user %}
-                            data-price="{{ product.PRICE }}"
-                            data-image="{{ product.thumbnailUrl }}"
-                            data-discount="{{ product.DISCOUNT }}"
-                            data-product-name="{{ product.PRODUCT_NAME }}"
+                            data-price="{{ product.price }}"
+                            data-image="{{ product.thumbnail_url }}"
+                            data-discount="{{ product.discount }}"
+                            data-product-name="{{ product.name }}"
                             {% endif %}
                             >Add to Cart</button>
                         </div>
@@ -134,28 +136,28 @@
                 </div>
                 <div>
                     <div class="card-row">
-                    {% for similar_product in product.getSimilarProducts %}
+                    {% for similar_product in product.get_similar_products %}
                         <div class="card-col">
                             <div class="card">
                                 <div class="card-img-wrapper">
-                                    <a href="/products/{{ similar_product.PRODUCT_ID }}/">
-                                        <img class="card-img" src="{{ similar_product.thumbnailUrl }}" alt="product-img">
+                                    <a href="/products/{{ similar_product.id }}/">
+                                        <img class="card-img" src="{{ similar_product.thumbnail_url }}" alt="product-img">
                                     </a>
                                 </div>
                                 <div class="card-body">
                                     <div class="card-title">
-                                        <a href="/products/{{ similar_product.PRODUCT_ID }}/">
-                                            {{ similar_product.PRODUCT_NAME }}
+                                        <a href="/products/{{ similar_product.id }}/">
+                                            {{ similar_product.name }}
                                         </a>
                                     </div>
                                     <div class="sm-stars" style="--rating: {{similar_product.rating.average}};"></div>
 
                                     <div class="card-footer">
-                                        <div class="card-price">{{ similar_product.PRICE|number_format(2) }} GBP</div>
+                                        <div class="card-price">{{ similar_product.price|floatformat:2 }} GBP</div>
                                         <div class="d-flex">
-                                            {% if is_authenticated and not is_trader and not is_admin %}
-                                            <div class="card-cart wishlist-button {% if similar_product.isInWishList %}active{% endif %}" data-product-id="{{similar_product.PRODUCT_ID}}">
-                                                {% if similar_product.isInWishList %}
+                                            {% if user.is_authenticated and not user.is_trader and not user.is_admin %}
+                                            <div class="card-cart wishlist-button {% if similar_product.is_in_wish_list %}active{% endif %}" data-product-id="{{similar_product.id}}">
+                                                {% if similar_product.is_in_wish_list %}
                                                     <span class='iconify' data-icon='bi:heart-fill' data-inline='false'></span>
                                                 {% else %}
                                                     <span class='iconify' data-icon='el:heart-empty' data-inline='false'></span>
@@ -163,12 +165,12 @@
                                             </div>
                                             {% endif %}
                                             {% if similar_product.isAvailable and not is_trader and not is_admin %}
-                                                <div class="add-to-cart card-cart" data-product-id="{{ similar_product.PRODUCT_ID }}" data-quantity="1"
+                                                <div class="add-to-cart card-cart" data-product-id="{{ similar_product.id }}" data-quantity="1"
                                                 {% if not user %}
-                                                data-price="{{ similar_product.PRICE }}"
-                                                data-image="{{ similar_product.thumbnailUrl }}"
-                                                data-discount="{{ similar_product.DISCOUNT }}"
-                                                data-product-name="{{ similar_product.PRODUCT_NAME }}"
+                                                data-price="{{ similar_product.price }}"
+                                                data-image="{{ similar_product.thumbnail_url }}"
+                                                data-discount="{{ similar_product.discount }}"
+                                                data-product-name="{{ similar_product.name }}"
                                                 {% endif %}
                                                 >
                                                     <span></span>
@@ -180,7 +182,7 @@
                                 </div>
                             </div>
                         </div>
-                    {% else %}
+                    {% empty %}
                         <h4 class="text-center grey-text" style="margin: 40px auto 20px auto;">No similar product found</h4>
                     {% endfor %}
                     </div>
@@ -224,7 +226,7 @@
                             </div>
                         </div>
                         <div class="rating-summary-wrapper">
-                        {% for rating in product.analyzeRating() %}
+                        {% for rating in product.analyzeRating %}
                             <div class="rating-summary-row">
                                 <div class="md-stars" style="--rating: {{rating.RATING_OF}};"></div>
                                 <div class="rating-percent-bar-wrapper">
@@ -237,7 +239,7 @@
                     </div>
                     <div class="reviews-wrapper">
                         <div class="review-heading">Reviews</div>
-                        {% for review in product.getReviewsOnly() %}
+                        {% for review in product.getReviewsOnly %}
                             <div class="each-review-row">
                                 <div class="raters-rating-wrapper">
                                     <div class="md-stars" style="--rating: {{ review.RATING }};"></div>
@@ -251,16 +253,16 @@
                                 </div>
                                 {% if review.USER_ID == user.user_id %}
                                 <div class="d-flex">
-                                    <div class="edit-item edit-review light-text" data-product-id="{{ product.PRODUCT_ID }}" data-review-text="{{review.REVIEW_TEXT}}">
+                                    <div class="edit-item edit-review light-text" data-product-id="{{ product.id }}" data-review-text="{{review.REVIEW_TEXT}}">
                                         <span>Edit</span>
                                     </div>
-                                    <div class="delete-item delete-review" data-product-id="{{ product.PRODUCT_ID }}">
+                                    <div class="delete-item delete-review" data-product-id="{{ product.id }}">
                                         <span>Delete</span>
                                     </div>
                                 </div>
                                 {% endif %}
                             </div>
-                        {% else %}
+                        {% empty %}
                             <h4 class="text-center grey-text" style="margin: 40px auto 20px auto;">No reviews yet.</h4>
                         {% endfor %}
                     </div>
@@ -273,11 +275,11 @@
                     </div>
                     <div class="queries-form-wrapper">
                         {% if not is_trader %}
-                            <form id="queries-form"  action="/ajax/products/{{product.PRODUCT_ID}}/add-query/" method="post">
+                            <form id="queries-form"  action="/ajax/products/{{product.id}}/add-query/" method="post">
                                 <div class="queries-form">
                                     <input id="question" name="question" class="query-inpt" type="text" placeholder="Your queries..." required>
                                     {% if not user %}
-                                        <a href="/login/?next=/products/{{ product.PRODUCT_ID }}/" class="submit-btn">Submit</a>
+                                        <a href="/login/?next=/products/{{ product.id }}/" class="submit-btn">Submit</a>
                                     {% else %}
                                         <button type="submit" class="submit-btn">Submit</button>
                                     {% endif %}
@@ -287,7 +289,7 @@
                         {% endif %}
 
                         {% if product.shop.TRADER_ID == user.user_id %}
-                            <form id="answer-form" class="d-none" action="/ajax/products/{{product.PRODUCT_ID}}/add-answer/{{ product.QUERY_ID }}/" method="post">
+                            <form id="answer-form" class="d-none" action="/ajax/products/{{product.id}}/add-answer/{{ product.QUERY_ID }}/" method="post">
                                 <small id="answering-to-text" class="grey-text"></small>
                                 <div class="queries-form">
                                     <input id="answer" name="answer" class="query-inpt" type="text" placeholder="Your answer..." required>
@@ -344,7 +346,7 @@
                                     </div>
                                     {% endif %}
                                 </div>
-                                {% else %}
+                                {% empty %}
                                     <h4 id="no-query" class="text-center grey-text" style="margin: 40px auto 20px auto;">No queries yet.</h4>
                                 {% endfor %}
                             </div>
@@ -358,17 +360,17 @@
 {% endblock %}
 
 {% block scripts %}
-    <script src="/public/js/wishlist.js"></script>
-    <script src="/public/js/shopBySlider.js"></script>
-    <script src="/public/js/imageZoom.js"></script>
-    <script src="/public/js/queries.js"></script>
-    <script src="/public/js/main-product.js"></script>
+    <script src="{% static 'js/wishlist.js' %}"></script>
+    <script src="{% static 'js/shopBySlider.js' %}"></script>
+    <script src="{% static 'js/imageZoom.js' %}"></script>
+    <script src="{% static 'js/queries.js' %}"></script>
+    <script src="{% static 'js/main-product.js' %}"></script>
     {% if user %}
-    <script src="/public/js/add-to-cart.js"></script>
+    <script src="{% static 'js/add-to-cart.js' %}"></script>
     {% else %}
-    <script src="/public/js/add-to-cart-local.js"></script>
+    <script src="{% static 'js/add-to-cart-local.js' %}"></script>
     {% endif %}
     {% if product.hasUserOrderedProduct %}
-    <script src="/public/js/review-rating.js"></script>
+    <script src="{% static 'js/review-rating.js' %}"></script>
     {% endif %}
 {% endblock %}

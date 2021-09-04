@@ -101,6 +101,10 @@ class User(AbstractBaseUser):
         return self.USER_IS_TRADER == self.user_role
 
     @property
+    def is_customer(self):
+        return self.USER_IS_CUSTOMER == self.user_role
+
+    @property
     def valid_otp(self):
         if self.otp_expired:
             self.otp = randint(100000, 999999)

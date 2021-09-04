@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Edit Product | efoodbasket{% endblock %}
 
 {% block titleLinks %}
-    <link rel="stylesheet" type="text/css" href="/public/css/form.css">
-    <link rel="stylesheet" type="text/css" href="/public/css/add-product.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/form.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/add-product.css' %}">
 {% endblock %}
 
 {% block main %}
@@ -13,23 +14,24 @@
             <div class="signup-wrapper">
                 <div class="signup-container">
                     <div>
-                        <img src="/public/images/efoodbasket-name.png" class="login-logo" alt="eFoodBasket-logo">
+                        <img src="{% static 'images/efoodbasket-name.png' %}" class="login-logo" alt="eFoodBasket-logo">
                     </div>
                     <div class="form-wrapper">
                         <form class="login-form" method="POST" >
+                            {% csrf_token %}
                             <div class="form-row">
                                 <div class="form-col-2">
                                     <div class="inpt-wrapper">
                                         <label for="nameId">Product Name</label>
-                                        <input id="nameId" type="text" name="product_name" placeholder="Product Name..." value="{{ product.product_name }}">
-                                        <small class="red-text">{{ errors.product_name }}</small>
+                                        <input id="nameId" type="text" name="name" placeholder="Product Name..." value="{{form.name.value|default_if_none:""}}">
+                                        <small class="red-text">{{ form.name.errors.0 }}</small>
                                     </div>
                                 </div>
                                 <div class="form-col-2">
                                     <div class="inpt-wrapper">
                                         <label for="priceId">Price</label>
-                                        <input id="priceId" type="text" name="price" placeholder="Product Price..." value="{{ product.price }}">
-                                        <small class="red-text">{{ errors.price }}</small>
+                                        <input id="priceId" type="text" name="price" placeholder="Product Price..." value="{{form.price.value|default_if_none:""}}">
+                                        <small class="red-text">{{ form.price.errors.0 }}</small>
                                     </div>
                                 </div>
                             </div>
@@ -37,58 +39,58 @@
                                 <div class="form-col-2">
                                     <div class="inpt-wrapper">
                                         <label for="quantityId">Quantity</label>
-                                        <input id="quantityId" type="text" name="quantity" placeholder="Product Quantity..." value="{{ product.quantity }}">
-                                        <small class="red-text">{{ errors.quantity }}</small>
+                                        <input id="quantityId" type="text" name="quantity" placeholder="Product Quantity..." value="{{form.quantity.value|default_if_none:""}}">
+                                        <small class="red-text">{{ form.quantity.errors.0 }}</small>
                                     </div>
                                 </div>
                                 <div class="form-col-2">
                                     <div class="inpt-wrapper">
                                         <label for="categoryId">Product Category</label>
-                                        <select name="category_id" id="categoryId">
+                                        <select name="category" id="categoryId">
                                             <option value="">--Select category--</option>
                                             {% for category in categories %}
-                                                <option value="{{ category.CATEGORY_ID }}" {% if category.CATEGORY_ID == product.category_id %}selected{% endif %}>{{ category.CATEGORY_NAME }}</option>
+                                                <option value="{{ category.id }}" {% if category.id == form.category.value %}selected{% endif %}>{{ category.name }}</option>
                                             {% endfor %}
                                         </select>
-                                        <small class="red-text">{{ errors.category_id }}</small>
+                                        <small class="red-text">{{ form.category.errors.0 }}</small>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-col-2">
                                     <div class="inpt-wrapper">
-                                        <input type="checkbox" name="availability" {% if product.availability == 'Y' %}checked{% endif %}> <span class="grey-text">Availability</span>
+                                        <input type="checkbox" name="availability" {% if form.availability.value %}checked{% endif %}> <span class="grey-text">Availability</span>
                                     </div>
                                 </div>
                                 <div class="form-col-2">
                                     <div class="inpt-wrapper">
                                         <label for="shopId">Shop Name</label>
-                                        <select name="shop_id" id="shopId">
+                                        <select name="shop" id="shopId">
                                             <option value="">--Select shop name--</option>
                                             {% for shop in shops %}
-                                                <option value="{{ shop.SHOP_ID }}" {% if shop.SHOP_ID == product.shop_id %}selected{% endif %}>{{ shop.SHOP_NAME }}</option>
+                                                <option value="{{ shop.id }}" {% if shop.id == form.shop.value %}selected{% endif %}>{{ shop.name }}</option>
                                             {% endfor %}
                                         </select>
-                                        <small class="red-text">{{ errors.shop_id }}</small>
+                                        <small class="red-text">{{ form.shop.errors.0 }}</small>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-col-2">
                                 <div class="inpt-wrapper">
                                     <label for="discountId">Discount</label>
-                                    <input id="discountId" type="number" name="discount" placeholder="Product discount if any..." value="{{ product.discount }}">
-                                    <small class="red-text">{{ errors.discount }}</small>
+                                    <input id="discountId" type="number" name="discount" placeholder="Product discount if any..." value="{{form.discount.value|default_if_none:"0"}}">
+                                    <small class="red-text">{{ form.discount.errors.0 }}</small>
                                 </div>
                             </div>
                             <div class="inpt-wrapper">
                                 <label for="detailsId">Description</label>
-                                <textarea name="description" id="detailsId" placeholder="Decribe your product in few words...">{{ product.description }}</textarea>
-                                <small class="red-text">{{ errors.description }}</small>
+                                <textarea name="description" id="detailsId" placeholder="Decribe your product in few words...">{{form.description.value|default_if_none:""}}</textarea>
+                                <small class="red-text">{{ form.description.errors.0 }}</small>
                             </div>
                             <div class="inpt-wrapper">
                                 <label for="alleryInformId">Allergy Information</label>
-                                <textarea name="allergy_information" id="alleryInformId" placeholder="Decribe your product allergy information...">{{ product.allergy_information }}</textarea>
-                                <small class="red-text">{{ errors.allergy_information }}</small>
+                                <textarea name="allergy_information" id="alleryInformId" placeholder="Decribe your product allergy information...">{{form.allergy_information.value|default_if_none:""}}</textarea>
+                                <small class="red-text">{{ form.allergy_information.errors.0 }}</small>
                             </div>
 
                             <div class="login-btn-wrapper">
