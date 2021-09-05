@@ -16,4 +16,7 @@ urlpatterns = [
     path('ajax/products/<id>/delete-query/<pk>/', views.QueryDeleteView.as_view(), name='query_delete'),
     path('ajax/products/<id>/add-answer/<pk>/', views.AnswerUpdateView.as_view(), name='answer_create'),
     path('ajax/products/<id>/delete-answer/<pk>/', views.AnswerDeleteView.as_view(), name='answer_delete'),
+    path('ajax/products/<pk>/add-rating/', views.RatingCreateUpdateView.as_view(), name='rating_create'),
+    path('ajax/products/<pk>/add-review/', views.ReviewCreateUpdateView.as_view(), name='review_create'),
+    path('ajax/products/<id>/delete-review/<pk>/', views.ReviewDeleteView.as_view(), name='review_delete'),
 ]

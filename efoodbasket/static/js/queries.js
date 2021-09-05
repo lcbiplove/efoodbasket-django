@@ -19,8 +19,6 @@ window.addEventListener("load", function(){
 
     var onQuerySuccess = function(response) {
         hideBigLoader();
-        console.log(response);
-
         try {
             var data = JSON.parse(response);
 

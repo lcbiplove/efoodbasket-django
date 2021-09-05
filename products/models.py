@@ -1,9 +1,13 @@
+from django.db.models.fields import FloatField
 from users.models import Trader, User
 from django.db import models
 from django.urls import reverse
 from . import validators
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
+from django.db.models import F, Avg, Count
+from django.db.models.functions import Round, Coalesce
+from operator import itemgetter
 
 class Shop(models.Model):
     name = models.CharField(max_length=40, validators=[validators.validate_shop_name])               
@@ -74,6 +78,41 @@ class Product(models.Model):
     def is_in_wish_list(self):
         return False
 
+    def reviews(self):
+        return Review.objects.filter(rating__product__id=self.id ).select_related('rating', 'rating__product', 'rating__user' ) 
+
+    def rating(self):
+        rating = Rating.objects.filter(product__id=self.id).\
+                aggregate(rating=Coalesce(
+                    Avg('rating'), 0, output_field=FloatField()
+                    )
+                )['rating']
+        return round(rating, 2)
+
+    def analyze_rating(self):
+        queryset = Rating.objects.filter(product__id=self.id)
+        total = queryset.count()
+        qs = queryset.annotate(
+                rate=Round('rating')
+            ).values('rate').annotate(total=Count('rate'))
+
+        qs_list = list(qs)
+
+        for item in qs_list:
+            item['percent'] = item['total'] / total * 100
+
+        for i in range(1, 6):
+            if not any(int(d['rate']) == i for d in qs_list):
+                qs_list.append(
+                    {
+                        'rate': i,
+                        'total': 0,
+                        'percent': 0,
+                    }
+                )
+        newlist = sorted(qs_list, key=itemgetter('rate'), reverse=True) 
+        return newlist
+
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_images')
     image = models.ImageField(upload_to='products/')
@@ -91,7 +130,7 @@ class Query(models.Model):
 
     class Meta:
         verbose_name_plural = 'Queries'
-        ordering = ['-question_date', '-answer_date']
+        ordering = [F('answer').asc(nulls_last=True), '-question_date', '-answer_date']
 
     def __str__(self) -> str:
         return self.question
@@ -99,26 +138,27 @@ class Query(models.Model):
     def is_answered(self):
         return self.answer
 
-    
-
-class Review(models.Model):
-    review = models.CharField(max_length=2000, validators=[MinLengthValidator(10)])
-    added_date = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_reviews')
-    product = models.ForeignKey(User, on_delete=models.CASCADE, related_name='product_reviews')
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['user', 'product'], name='unique_for_review')
-        ]
 
 class Rating(models.Model):
     rating = models.DecimalField(max_digits=2, decimal_places=1)
     added_date = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_ratings')
-    product = models.ForeignKey(User, on_delete=models.CASCADE, related_name='product_ratings')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_ratings')
     
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['user', 'product'], name='unique_for_rating')
         ]
+
+    def __str__(self) -> str:
+        return str(self.rating)
+    
+
+class Review(models.Model):
+    review = models.CharField(max_length=2000, validators=[MinLengthValidator(10)])
+    added_date = models.DateTimeField(auto_now_add=True)
+    rating = models.OneToOneField(Rating, on_delete=models.CASCADE, unique=True)
+
+    def __str__(self) -> str:
+        return self.review
+

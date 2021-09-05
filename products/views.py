@@ -3,10 +3,10 @@ from django.core.checks import messages
 from django.http.response import JsonResponse
 from django.shortcuts import redirect
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView, DetailView
-from .models import Product, ProductCategory, Query, Shop, ProductImage
+from .models import Product, ProductCategory, Query, Rating, Review, Shop, ProductImage
 from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
-from .permissions import ShopOwnerRequired, ProductOwnerRequired, QuestionOwnerRequired, AnswerOwnerRequired
+from .permissions import ShopOwnerRequired, ProductOwnerRequired, QuestionOwnerRequired, AnswerOwnerRequired, ReviewOwnerRequired
 from users.permissions import TraderRequired, CustomerRequired
 from django.contrib import messages
 from .forms import CreateProductForm
@@ -209,5 +209,63 @@ class AnswerDeleteView(AnswerOwnerRequired, UpdateView):
         self.object.answer = None
         self.object.answer_date = None
         self.object.save()
+        payload = {'delete': 'ok'}
+        return JsonResponse(payload)
+
+class RatingCreateUpdateView(CustomerRequired, CreateView):
+    model = Rating
+    fields = ['rating',]
+
+    def form_valid(self, form):
+        rating = form.cleaned_data.get("rating")
+        self.object, _ = Rating.objects.update_or_create(
+            user=self.request.user, 
+            product=Product.objects.get(pk=self.kwargs['pk']), 
+            defaults={
+                'rating': rating
+            }
+        )
+        return JsonResponse({'success': True})
+
+    def form_invalid(self, form):
+        return JsonResponse({
+            'error': form['rating'].errors[0]
+        })
+
+class ReviewCreateUpdateView(CustomerRequired, CreateView):
+    model = Review
+    fields = ['review',]
+
+    def form_valid(self, form):
+        review = form.cleaned_data.get("review")
+        try:
+            rating = Rating.objects.get(user__id=self.request.user.id, product__id=self.kwargs['pk'])
+            self.object, _ = Review.objects.update_or_create(
+                rating=rating, 
+                defaults={
+                    'review': review
+                }
+            )
+            return JsonResponse({'success': True})
+        except:
+            return JsonResponse({
+                'error': 'Please give rating before adding your review.'
+            })
+
+    def form_invalid(self, form):
+        return JsonResponse({
+            'error': form['review'].errors[0]
+        })
+
+class ReviewDeleteView(ReviewOwnerRequired, DeleteView):
+    model = Review
+    success_url = reverse_lazy('product_manage')
+    http_method_names = ['post']
+
+    def http_method_not_allowed(self, request, *args, **kwargs):
+        return redirect(self.success_url)
+
+    def delete(self, request, *args, **kwargs):
+        self.get_object().delete()
         payload = {'delete': 'ok'}
         return JsonResponse(payload)

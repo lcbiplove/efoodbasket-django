@@ -43,9 +43,9 @@ class UserManager(BaseUserManager):
             password=password,
             fullname=fullname,
             contact=contact,
-            address=address
+            address=address,
+            user_role=User.USER_IS_ADMIN,
         )
-        user.user_role = User.USER_IS_ADMIN
         user.is_active = True
         self.otp = randint(100000, 999999)
         self.otp_last_date = timezone.now()
@@ -77,7 +77,7 @@ class User(AbstractBaseUser):
 
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
-    REQUIRED_FIELDS = ['fullname', 'contact']
+    REQUIRED_FIELDS = ['fullname', 'contact', 'address']
 
     objects = UserManager()
 

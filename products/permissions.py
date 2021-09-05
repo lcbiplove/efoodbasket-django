@@ -32,3 +32,9 @@ class AnswerOwnerRequired(TraderRequired):
         super().test_func()
         self.object = self.get_object()
         return self.request.user.trader.id == self.object.product.shop.trader.id
+
+class ReviewOwnerRequired(LoginRequiredMixin, UserPassesTestMixin):
+
+    def test_func(self):
+        self.object = self.get_object()
+        return self.request.user.id == self.object.rating.user.id

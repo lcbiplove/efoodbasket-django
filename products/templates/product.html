@@ -44,9 +44,9 @@
                     <div class="rating-share-wrapper">
                         <div>
                             <div class="product-ratings-wrap">
-                                <div class="md-stars" style="--rating: {{product.rating.average}};"></div>
+                                <div class="md-stars" style="--rating: {{product.rating}};"></div>
                                 <div class="product-rating-in-num">
-                                    {{product.rating.total}} Ratings
+                                    {{product.product_ratings.count}} Ratings
                                 </div>
                             </div>
                             <div class="d-flex">
@@ -150,7 +150,7 @@
                                             {{ similar_product.name }}
                                         </a>
                                     </div>
-                                    <div class="sm-stars" style="--rating: {{similar_product.rating.average}};"></div>
+                                    <div class="sm-stars" style="--rating: {{similar_product.rating}};"></div>
 
                                     <div class="card-footer">
                                         <div class="card-price">{{ similar_product.price|floatformat:2 }} GBP</div>
@@ -193,20 +193,19 @@
                     <div class="prod-section-heading">
                         Ratings and Reviews
                     </div>
-                    {% if product.hasUserOrderedProduct %}
+                    {% if 1 == 1 %}
                     <div class="review-form-wrapper" style="margin-top: 20px;">
                         <div class="give-rating-wrapper">
                             <div class="give-rating-text">Give your rating</div>
                             <div class="rating-form-wrapper">
                                 <div id="give-rating" class="xl-stars give-rating-star" style="--rating: {% if product.reviewer.RATING %}{{product.reviewer.RATING}}{% else %}0{% endif %};"></div>
-                                <button id="rate-btn" class="rate-btn disabled">Rate</button>
+                                <button id="rate-btn" class="rate-btn disabled" data-action="{% url 'rating_create' product.id %}">Rate</button>
                             </div>
                         </div>
-                        <form id="review-form" action="/ajax/products/{{product.PRODUCT_ID}}/add-review/" method="POST">
+                        <form id="review-form" action="{% url 'review_create' product.id %}" method="POST">
                             {% csrf_token %}
                             <div class="queries-form">
                                 <input id="review-inpt" name="review_text" class="query-inpt" type="text" placeholder="Your review about the product...">
-                                <input id="rating-inpt" value="{{product.reviewer.RATING}}" name="rating" type="hidden" />
                                 <button type="submit" class="submit-btn">Submit</button>
                             </div>
                         </form>
@@ -215,49 +214,49 @@
                     <div class="advance-rating-wrapper">
                         <div class="main-rating-wrapper">
                             <div>
-                                <span class="rating-value">{{product.rating.average}}</span>
+                                <span class="rating-value">{{product.rating}}</span>
                                 <span class="rating-helper-span">/</span>
                                 <span class="rating-helper-span">5</span>
                             </div>
                             <div>
-                                <div class="lg-stars" style="--rating: {{product.rating.average}};"></div>
+                                <div class="lg-stars" style="--rating: {{product.rating}};"></div>
                             </div>
                             <div class="grey-text">
-                                <span>{{product.rating.total}}</span> Rating(s)
+                                <span>{{product.product_ratings.count}}</span> Rating(s)
                             </div>
                         </div>
                         <div class="rating-summary-wrapper">
-                        {% for rating in product.analyzeRating %}
+                        {% for rating in product.analyze_rating %}
                             <div class="rating-summary-row">
-                                <div class="md-stars" style="--rating: {{rating.RATING_OF}};"></div>
+                                <div class="md-stars" style="--rating: {{rating.rate}};"></div>
                                 <div class="rating-percent-bar-wrapper">
-                                    <div class="rating-percent-bar" style="width: {{rating.PERCENT}}%;"></div>
+                                    <div class="rating-percent-bar" style="width: {{rating.percent}}%;"></div>
                                 </div>
-                                <div class="rating-numbers">{{rating.TOTAL}}</div>
+                                <div class="rating-numbers">{{rating.total}}</div>
                             </div>
                         {% endfor %}
                         </div>
                     </div>
                     <div class="reviews-wrapper">
                         <div class="review-heading">Reviews</div>
-                        {% for review in product.getReviewsOnly %}
+                        {% for review in product.reviews %}
                             <div class="each-review-row">
                                 <div class="raters-rating-wrapper">
-                                    <div class="md-stars" style="--rating: {{ review.RATING }};"></div>
+                                    <div class="md-stars" style="--rating: {{ review.rating }};"></div>
                                     <div class="rater-wrapper">
-                                        <span class="rater">by {{review.userName}}</span>
+                                        <span class="rater">by {{review.rating.user.fullname}}</span>
                                         <span class="isVerified"></span>
                                     </div>
                                 </div>
                                 <div class="raters-text">
-                                    {{review.REVIEW_TEXT}}
+                                    <b>{{review}}</b>
                                 </div>
-                                {% if review.USER_ID == user.user_id %}
+                                {% if review.rating.user.id == user.id %}
                                 <div class="d-flex">
-                                    <div class="edit-item edit-review light-text" data-product-id="{{ product.id }}" data-review-text="{{review.REVIEW_TEXT}}">
+                                    <div class="edit-item edit-review light-text" data-product-id="{{ product.id }}" data-review-text="{{review}}">
                                         <span>Edit</span>
                                     </div>
-                                    <div class="delete-item delete-review" data-product-id="{{ product.id }}">
+                                    <div class="delete-item delete-review" data-action="{% url 'review_delete' product.id review.id %}" data-review-id="{{review.id}}" >
                                         <span>Delete</span>
                                     </div>
                                 </div>
@@ -373,7 +372,7 @@
     {% else %}
     <script src="{% static 'js/add-to-cart-local.js' %}"></script>
     {% endif %}
-    {% if product.hasUserOrderedProduct %}
+    {% if 1 == 1 %}
     <script src="{% static 'js/review-rating.js' %}"></script>
     {% endif %}
 {% endblock %}
