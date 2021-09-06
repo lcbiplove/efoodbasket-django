@@ -11,6 +11,7 @@ from users.permissions import TraderRequired, CustomerRequired
 from django.contrib import messages
 from .forms import CreateProductForm
 from django.utils import timezone
+from django.db.models import Avg
 
 class ShopCreateView(TraderRequired, SuccessMessageMixin, CreateView):
     model = Shop
@@ -87,24 +88,49 @@ class ProductCreateView(SuccessMessageMixin, TraderRequired, CreateView):
             ProductImage.objects.create(image=file, product=self.object)
         return super().form_valid(form)
 
-class ManageProductView(TraderRequired, ListView):
+class VisitTraderView(ListView):
     model = Product
     template_name = 'manage-products.html'
     context_object_name = 'products'
-    extra_context = {'is_visitor_owner': True}
-
-class VisitTraderView(DetailView):
-    model = Trader
-    template_name = 'manage-products.html'
-    context_object_name = 'trader'
+    queryset = Product.objects.filter().select_related('shop')
+    paginate_by = 15
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if hasattr(self.request.user, 'trader'):
-            context['is_visitor_owner'] = str(self.request.user.trader.id) == self.kwargs['pk']
+            context['is_visitor_owner'] = str(self.request.user.trader.id) == self.kwargs.get('pk', '')
         else:
             context['is_visitor_owner'] = False
-        context['products'] = Product.objects.filter(shop__trader__id=self.kwargs['pk'])
+
+        if self.kwargs.get('pk'):
+            context['trader'] = Trader.objects.get(pk=self.kwargs.get('pk', ''))
+
+        context['selected_rating'] = self.request.GET.get('rating', '')
+        context['selected_min_price'] = self.request.GET.get('minPrice', '')
+        context['selected_max_price'] = self.request.GET.get('maxPrice', '')
+        return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        rating = self.request.GET.get('rating', '')
+        min_price = self.request.GET.get('minPrice', '')
+        max_price = self.request.GET.get('maxPrice', '')
+
+        if rating:
+            queryset = queryset.annotate(average_rating=Avg('product_ratings__rating')).filter(average_rating__gte=rating)
+
+        if min_price:
+            queryset = queryset.filter(price__gte=min_price)
+
+        if max_price:
+            queryset = queryset.filter(price__lte=max_price)
+
+        return queryset
+
+class ManageProductView(TraderRequired, VisitTraderView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_visitor_owner'] = True
         return context
 
 class ProductDetailView(DetailView):

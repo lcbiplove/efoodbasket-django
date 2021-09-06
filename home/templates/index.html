@@ -70,22 +70,22 @@
                     <div class="card-col">
                         <div class="card">
                             <div class="card-img-wrapper">
-                                <a href="/products/{{  product.PRODUCT_ID }}/">
-                                    <img class="card-img" src="{{ product.thumbnailUrl }}" alt="product-image">
+                                <a href="{% url 'product_detail' product.id %}">
+                                    <img class="card-img" src="{{ product.thumbnail_url }}" alt="product-image">
                                 </a>
                             </div>
                             <div class="card-body">
                                 <div class="card-title">
-                                    <a href="/products/{{  product.PRODUCT_ID }}/">
-                                        {{ product.PRODUCT_NAME }}
+                                    <a href="{% url 'product_detail' product.id %}">
+                                        {{ product.name }}
                                     </a>
                                 </div>
-                                <div class="sm-stars" style="--rating: {{product.rating.average}};"></div>
+                                <div class="sm-stars" style="--rating: {{product.rating}};"></div>
                                 <div class="card-footer">
-                                    <div class="card-price">{{ product.PRICE|floatformat:2 }} GBP</div>
+                                    <div class="card-price">{{ product.price|floatformat:2 }} GBP</div>
                                     <div class="d-flex">
                                         {% if is_authenticated and not is_trader and not is_admin %}
-                                        <div class="card-cart wishlist-button {% if product.isInWishList %}active{% endif %}" data-product-id="{{product.PRODUCT_ID}}">
+                                        <div class="card-cart wishlist-button {% if product.isInWishList %}active{% endif %}" data-product-id="{{product.id}}">
                                             {% if product.isInWishList %}
                                                 <span class='iconify' data-icon='bi:heart-fill' data-inline='false'></span>
                                             {% else %}
@@ -93,13 +93,13 @@
                                             {% endif %}
                                         </div>
                                         {% endif %}
-                                        {% if product.isAvailable and not is_trader and not is_admin %}
-                                            <div class="card-cart add-to-cart" data-product-id="{{ product.PRODUCT_ID }}" data-quantity="1"
+                                        {% if product.availability and not user.is_trader and not user.is_admin %}
+                                            <div class="card-cart add-to-cart" data-product-id="{{ product.id }}" data-quantity="1"
                                             {% if not user %}
-                                            data-price="{{ product.PRICE }}"
-                                            data-image="{{ product.thumbnailUrl }}"
-                                            data-discount="{{ product.DISCOUNT }}"
-                                            data-product-name="{{ product.PRODUCT_NAME }}"
+                                            data-price="{{ product.price }}"
+                                            data-image="{{ product.thumbnail_url }}"
+                                            data-discount="{{ product.discount }}"
+                                            data-product-name="{{ product.name }}"
                                             {% endif %}
                                             >
                                                 <span></span>
@@ -114,12 +114,14 @@
                 {% endfor %}
                 </div>
             </div>
-            <div class="more-btn-wrapper">
-                <a href="/page/{{page}}/" class="more-btn">
-                    <span>More Products</span>
-                    <span class="iconify" data-icon="ant-design:caret-down-outlined" data-inline="false"></span>
-                </a>
-            </div>
+            {% if page_obj.has_next %}
+                <div class="more-btn-wrapper">
+                    <a href="?page={{ page_obj.next_page_number }}" class="more-btn">
+                        <span>More Products</span>
+                        <span class="iconify" data-icon="ant-design:caret-down-outlined" data-inline="false"></span>
+                    </a>
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>

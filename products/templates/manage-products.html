@@ -35,30 +35,30 @@
                         <div class="filter-heading">Rating: </div>
                         <div class="filter-body">
                             <div class="filter-stars-row">
-                                <a href="5" class="filter-row-rating {% if selected_rating == 5 %}active{% endif %}">
+                                <a href="5" class="filter-row-rating {% if selected_rating == '5' %}active{% endif %}">
                                     <div class="md-stars" style="--rating: 5"></div>
                                 </a>
                             </div>
                             <div class="filter-stars-row">
-                                <a href="4" class="d-flex filter-row-rating {% if selected_rating == 4 %}active{% endif %}">
+                                <a href="4" class="d-flex filter-row-rating {% if selected_rating == '4' %}active{% endif %}">
                                     <div class="md-stars" style="--rating: 4"></div>
                                     <div class="and-up"> & above</div>
                                 </a>
                             </div>
                             <div class="filter-stars-row">
-                                <a href="3" class="d-flex filter-row-rating {% if selected_rating == 3 %}active{% endif %}">
+                                <a href="3" class="d-flex filter-row-rating {% if selected_rating == '3' %}active{% endif %}">
                                     <div class="md-stars" style="--rating: 3"></div>
                                     <div class="and-up"> & above</div>
                                 </a>
                             </div>
                             <div class="filter-stars-row">
-                                <a href="2" class="d-flex filter-row-rating {% if selected_rating == 2 %}active{% endif %}">
+                                <a href="2" class="d-flex filter-row-rating {% if selected_rating == '2' %}active{% endif %}">
                                     <div class="md-stars" style="--rating: 2"></div>
                                     <div class="and-up"> & above</div>
                                 </a>
                             </div>
                             <div class="filter-stars-row">
-                                <a href="1" class="d-flex filter-row-rating {% if selected_rating == 1 %}active{% endif %}">
+                                <a href="1" class="d-flex filter-row-rating {% if selected_rating == '1' %}active{% endif %}">
                                     <div class="md-stars" style="--rating: 1"></div>
                                     <div class="and-up"> & above</div>
                                 </a>
@@ -72,8 +72,8 @@
                         <div class="filter-body">
                             <div id="myRangeSlider" class="myRangeSlider"></div>
                             <div class="min-max-wrapper">
-                                <input class="minMaxPrice" type="number" name="minPrice" id="minPrice" placeholder="0" value="{{selected_minPrice}}" readonly>
-                                <input class="minMaxPrice" type="number" name="maxPrice" id="maxPrice" placeholder="200" value="{{selected_maxPrice}}" readonly>
+                                <input class="minMaxPrice" type="number" name="minPrice" id="minPrice" placeholder="0" value="{{selected_min_price}}" readonly>
+                                <input class="minMaxPrice" type="number" name="maxPrice" id="maxPrice" placeholder="200" value="{{selected_max_price}}" readonly>
                             </div>
                         </div>
                     </div>
@@ -100,7 +100,7 @@
                                     </a>
                                 </div>
                                 <div class="card-big-star-price">
-                                    <div class="sm-stars" style="--rating: {{product.rating.average}};"></div>
+                                    <div class="sm-stars" style="--rating: {{product.rating}};"></div>
                                     <div class="card-big-price">{{product.price|floatformat:2}} GBP</div>
                                 </div>
                                 <div class="card-key-value-wrapper">

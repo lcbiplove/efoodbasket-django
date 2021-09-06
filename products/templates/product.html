@@ -10,6 +10,7 @@
 {% endblock %}
 
 {% block main %}
+{% with product_rating=product.rating product_count=product.product_ratings.count %}
 <div class="max-width-wrapper">
     <div class="main-product-wrapper">
         <div class="product-details-wrapper">
@@ -44,9 +45,9 @@
                     <div class="rating-share-wrapper">
                         <div>
                             <div class="product-ratings-wrap">
-                                <div class="md-stars" style="--rating: {{product.rating}};"></div>
+                                <div class="md-stars" style="--rating: {{product_rating}};"></div>
                                 <div class="product-rating-in-num">
-                                    {{product.product_ratings.count}} Ratings
+                                    {{product_count}} Ratings
                                 </div>
                             </div>
                             <div class="d-flex">
@@ -214,15 +215,15 @@
                     <div class="advance-rating-wrapper">
                         <div class="main-rating-wrapper">
                             <div>
-                                <span class="rating-value">{{product.rating}}</span>
+                                <span class="rating-value">{{product_rating}}</span>
                                 <span class="rating-helper-span">/</span>
                                 <span class="rating-helper-span">5</span>
                             </div>
                             <div>
-                                <div class="lg-stars" style="--rating: {{product.rating}};"></div>
+                                <div class="lg-stars" style="--rating: {{product_rating}};"></div>
                             </div>
                             <div class="grey-text">
-                                <span>{{product.product_ratings.count}}</span> Rating(s)
+                                <span>{{product_count}}</span> Rating(s)
                             </div>
                         </div>
                         <div class="rating-summary-wrapper">
@@ -359,6 +360,7 @@
         </div>
     </div>
 </div>
+{% endwith %}
 {% endblock %}
 
 {% block scripts %}
