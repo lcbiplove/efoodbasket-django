@@ -7,7 +7,9 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
 from django.db.models import F, Avg, Count
 from django.db.models.functions import Round, Coalesce
-from operator import itemgetter
+from operator import itemgetter, mod
+
+import products
 
 class Shop(models.Model):
     name = models.CharField(max_length=40, validators=[validators.validate_shop_name])               
@@ -165,3 +167,16 @@ class Review(models.Model):
     def __str__(self) -> str:
         return self.review
 
+
+class WishList(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_wishlists')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_wishlists')
+    added_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'product'], name='unique_for_user')
+        ]
+
+    def __str__(self) -> str:
+        return self.user.email+ " / " + self.product.name

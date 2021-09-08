@@ -47,7 +47,6 @@ window.addEventListener("load", function(){
     
             var action = queryForm.getAttribute("action");
             var data = new FormData();
-            // getCookie('csrftoken');
             data.append("question", question.value);
             data.append("csrfmiddlewaretoken", getCookie('csrftoken'));
             ajax("POST", action, data, onQuerySuccess);

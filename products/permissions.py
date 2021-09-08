@@ -1,4 +1,4 @@
-from users.permissions import TraderRequired
+from users.permissions import CustomerRequired, TraderRequired
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 
 class ShopOwnerRequired(LoginRequiredMixin, UserPassesTestMixin):
@@ -38,3 +38,9 @@ class ReviewOwnerRequired(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
         self.object = self.get_object()
         return self.request.user.id == self.object.rating.user.id
+
+class WishListOwnerRequired(CustomerRequired):
+
+    def test_func(self):
+        self.object = self.get_object()
+        return self.object.user.id == self.request.user.id

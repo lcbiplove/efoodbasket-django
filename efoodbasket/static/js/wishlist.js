@@ -7,14 +7,11 @@ window.addEventListener("load", function(){
     var currentWishElem = null;
 
     var onWishlistAdd = function(response) {
-        console.log(response);
         currentWishElem.innerHTML = filledHeart;
         currentWishElem.classList.add("active");
     }
 
     var onWishlistDel = function(response) {
-        console.log(response);
-
         currentWishElem.innerHTML = emptyHeart;
         currentWishElem.classList.remove("active");
     }
@@ -25,14 +22,14 @@ window.addEventListener("load", function(){
             var product_id = element.getAttribute("data-product-id");
 
             var data = new FormData();
-            data.append("product_id", product_id);
+            data.append("csrfmiddlewaretoken", getCookie('csrftoken'));
 
             if(currentWishElem.classList.contains("active")){
-                var action = "/ajax/wishlists/delete/";
+                var action = "/ajax/products/"+product_id+"/wishlists/delete/";
                 ajax("POST", action, data, onWishlistDel);
             } 
             else {
-                var action = "/ajax/wishlists/add/";
+                var action = "/ajax/products/"+product_id+"/wishlists/add/";
                 ajax("POST", action, data, onWishlistAdd);
             }
         }

@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Wishlist | efoodbasket{% endblock %}
+
+{% block titleLinks %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/stars.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/product-cards.css' %}">
+    <link rel="stylesheet" href="{% static 'css/omni-slider.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/search.css' %}">
+{% endblock %}
+
+{% block main %}
+<div class="max-width-wrapper">
+    <div class="main-search-wrapper">
+        <div class="search-headers">
+            <div class="search-results">
+                My Wishlist
+                ({{ products|length }})
+            </div>
+        </div>
+        <div class="search-body">
+            <div class="filters-wrapper">
+                <form id="filter-form" class="filter-form" action="#" method="get">
+                    <div class="filter-row">
+                        <div class="filter-heading">Rating: </div>
+                        <div class="filter-body">
+                            <div class="filter-stars-row">
+                                <a href="5" class="filter-row-rating {% if selected_rating == '5' %}active{% endif %}">
+                                    <div class="md-stars" style="--rating: 5"></div>
+                                </a>
+                            </div>
+                            <div class="filter-stars-row">
+                                <a href="4" class="d-flex filter-row-rating {% if selected_rating == '4' %}active{% endif %}">
+                                    <div class="md-stars" style="--rating: 4"></div>
+                                    <div class="and-up"> & above</div>
+                                </a>
+                            </div>
+                            <div class="filter-stars-row">
+                                <a href="3" class="d-flex filter-row-rating {% if selected_rating == '3' %}active{% endif %}">
+                                    <div class="md-stars" style="--rating: 3"></div>
+                                    <div class="and-up"> & above</div>
+                                </a>
+                            </div>
+                            <div class="filter-stars-row">
+                                <a href="2" class="d-flex filter-row-rating {% if selected_rating == '2' %}active{% endif %}">
+                                    <div class="md-stars" style="--rating: 2"></div>
+                                    <div class="and-up"> & above</div>
+                                </a>
+                            </div>
+                            <div class="filter-stars-row">
+                                <a href="1" class="d-flex filter-row-rating {% if selected_rating == '1' %}active{% endif %}">
+                                    <div class="md-stars" style="--rating: 1"></div>
+                                    <div class="and-up"> & above</div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-heading">
+                            Price:
+                        </div>
+                        <div class="filter-body">
+                            <div id="myRangeSlider" class="myRangeSlider"></div>
+                            <div class="min-max-wrapper">
+                                <input class="minMaxPrice" type="number" name="minPrice" id="minPrice" placeholder="0" value="{{selected_min_price}}" readonly>
+                                <input class="minMaxPrice" type="number" name="maxPrice" id="maxPrice" placeholder="200" value="{{selected_max_price}}" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-btn">Apply</div>
+                        <div class="filter-reset-btn">Reset</div>
+                    </div>
+                </form>
+            </div>
+            <div class="results-wrapper">
+                <div class="card-row">
+                {% for product in products %}
+                    {% with thumbnail_url=product.thumbnail_url  %}
+                        <div class="card-col-big">
+                            <div class="card-big">
+                                <div class="card-img-wrapper">
+                                    <a href="{% url 'product_detail' product.id %}">
+                                        <img class="card-big-img" src="{{ thumbnail_url }}" alt="product-img">
+                                    </a>
+                                </div>
+                                <div class="card-big-body">
+                                    <div class="card-big-title">
+                                        <a href="{% url 'product_detail' product.id %}">
+                                            {{product.name}}
+                                        </a>
+                                    </div>
+                                    <div class="card-big-star-price">
+                                        <div class="sm-stars" style="--rating: {{product.rating}};"></div>
+                                        <div class="card-big-price">{{product.price|floatformat:2}} GBP</div>
+                                    </div>
+                                    <div class="card-key-value-wrapper">
+                                        <div class="card-key-value-row">
+                                            <div class="card-key">Shop</div>
+                                            <div class="card-value">
+                                                <span class="text-capital">{{product.shop.name}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="card-key-value-row">
+                                            <div class="card-key">Stock</div>
+                                            <div class="card-value">
+                                                <span class="light-text">{{product.quantity}}</span>
+                                            </div>
+                                        </div>
+                                        <div class="card-key-value-row">
+                                            <div class="card-key">{{product.added_date|date:"m M y"}}</div>
+                                        </div>
+                                    </div>
+                                    <div class="card-big-links">
+                                        {% if not user.is_trader and not user.is_admin %}
+                                            {% if user.is_authenticated %}
+                                            <span class="card-cart wishlist-button {% if product.isInWishList %}active{% endif %}" data-product-id="{{ product.id }}">
+                                                {% if product.isInWishList %}
+                                                    <span class='iconify' data-icon='bi:heart-fill' data-inline='false'></span>
+                                                {% else %}
+                                                    <span class='iconify' data-icon='el:heart-empty' data-inline='false'></span>
+                                                {% endif %}
+                                            </span>
+                                            {% endif %}
+                                            <span class="card-cart add-to-cart" data-product-id="{{ product.id }}" data-quantity="1" 
+                                            {% if not is_authenticated %}
+                                            data-price="{{ product.price }}"
+                                            data-image="{{ thumbnail_url }}"
+                                            data-discount="{{ product.discount }}"
+                                            data-product-name="{{ product.name }}"
+                                            {% endif %}
+                                            >
+                                                <span></span>
+                                                <span class="iconify cart--" data-icon="fluent:cart-20-regular" data-inline="false"></span>
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endwith %}
+                {% empty %}
+                    <h3 style="margin: auto; margin-top: 60px; color: #777;">No product in wishlist yet.</h3>
+                {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% if products %}
+        <div class="more-btn-wrapper">
+            <a id="more-item-btn" href="" class="more-btn">
+                <span>More Products</span>
+                <span class="iconify" data-icon="ant-design:caret-down-outlined" data-inline="false"></span>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts%}
+    <script src="{% static 'js/wishlist.js' %}"></script>
+    <script src="{% static 'js/omni-slider.min.js' %}"></script>
+    <script src="{% static 'js/main-search.js' %}"></script>
+    <script src="{% static 'js/add-to-cart.js' %}"></script>
+{% endblock %}

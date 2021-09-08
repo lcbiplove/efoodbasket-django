@@ -3,10 +3,11 @@ from django.core.checks import messages
 from django.http.response import JsonResponse
 from django.shortcuts import redirect
 from django.views.generic import ListView, CreateView, DeleteView, UpdateView, DetailView
-from .models import Product, ProductCategory, Query, Rating, Review, Shop, ProductImage
+from .models import Product, ProductCategory, Query, Rating, Review, Shop, ProductImage, WishList
 from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
-from .permissions import ShopOwnerRequired, ProductOwnerRequired, QuestionOwnerRequired, AnswerOwnerRequired, ReviewOwnerRequired
+from .permissions import ShopOwnerRequired, ProductOwnerRequired, QuestionOwnerRequired, \
+                            AnswerOwnerRequired, ReviewOwnerRequired, WishListOwnerRequired
 from users.permissions import TraderRequired, CustomerRequired
 from django.contrib import messages
 from .forms import CreateProductForm
@@ -88,23 +89,12 @@ class ProductCreateView(SuccessMessageMixin, TraderRequired, CreateView):
             ProductImage.objects.create(image=file, product=self.object)
         return super().form_valid(form)
 
-class VisitTraderView(ListView):
-    model = Product
-    template_name = 'manage-products.html'
+class ProductSearchFilter(ListView):
     context_object_name = 'products'
-    queryset = Product.objects.filter().select_related('shop')
     paginate_by = 15
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if hasattr(self.request.user, 'trader'):
-            context['is_visitor_owner'] = str(self.request.user.trader.id) == self.kwargs.get('pk', '')
-        else:
-            context['is_visitor_owner'] = False
-
-        if self.kwargs.get('pk'):
-            context['trader'] = Trader.objects.get(pk=self.kwargs.get('pk', ''))
-
         context['selected_rating'] = self.request.GET.get('rating', '')
         context['selected_min_price'] = self.request.GET.get('minPrice', '')
         context['selected_max_price'] = self.request.GET.get('maxPrice', '')
@@ -127,7 +117,24 @@ class VisitTraderView(ListView):
 
         return queryset
 
+class VisitTraderView(ProductSearchFilter):
+    model = Product
+    template_name = 'manage-products.html'
+    queryset = Product.objects.filter().select_related('shop')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if hasattr(self.request.user, 'trader'):
+            context['is_visitor_owner'] = str(self.request.user.trader.id) == self.kwargs.get('pk', '')
+        else:
+            context['is_visitor_owner'] = False
+
+        if self.kwargs.get('pk', ''):
+            context['trader'] = Trader.objects.get(pk=self.kwargs.get('pk', ''))
+        return context
+
 class ManageProductView(TraderRequired, VisitTraderView):
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['is_visitor_owner'] = True
@@ -137,6 +144,7 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = 'product.html'
     context_object_name = 'product'
+    queryset = Product.objects.filter().select_related('shop__trader', 'shop__trader__user')
 
 class ProductUpdateView(SuccessMessageMixin, ProductOwnerRequired, UpdateView):
     model = Product
@@ -290,6 +298,44 @@ class ReviewDeleteView(ReviewOwnerRequired, DeleteView):
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         return redirect(self.success_url)
+
+    def delete(self, request, *args, **kwargs):
+        self.get_object().delete()
+        payload = {'delete': 'ok'}
+        return JsonResponse(payload)
+
+class WishListView(CustomerRequired, ProductSearchFilter):
+    template_name = 'wishlists.html'
+    
+    def get_queryset(self):
+        user_id = self.request.user.id
+        return Product.objects.filter(product_wishlists__user__id=user_id)
+
+class WishCreateView(CustomerRequired, CreateView):
+    model = WishList
+    fields = []
+    
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.user = self.request.user
+        self.object.product = Product.objects.get(pk=self.kwargs['id'])
+        self.object.save()
+        return JsonResponse({'success': 'ok'})
+
+    def form_invalid(self, form):
+        return JsonResponse({'error': form.errors})
+    
+class WishDeleteView(WishListOwnerRequired, DeleteView):
+    model = WishList
+    success_url = reverse_lazy('home')
+    http_method_names = ['post']
+
+    def http_method_not_allowed(self, request, *args, **kwargs):
+        return redirect(self.success_url)
+
+    def get_object(self):
+        object = self.model.objects.get(product__id=self.kwargs['id'], user__id=self.request.user.id)
+        return object
 
     def delete(self, request, *args, **kwargs):
         self.get_object().delete()
