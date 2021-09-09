@@ -7,7 +7,7 @@ window.addEventListener("load", function(){
     var onAddSuccess = function(response){
         hideBigLoader();
         var result = JSON.parse(response);
-        var newTotalCartItems = result.totalItems;
+        var newTotalCartItems = result.total_items;
         showJsMessage(result.message, result.type);
         mainCartCountNavElem.forEach(function(item){
             item.innerHTML = newTotalCartItems; 
@@ -25,9 +25,10 @@ window.addEventListener("load", function(){
             var quantity = elem.getAttribute("data-quantity") || 1;
 
             var data = new FormData();
-            data.append("product_id", product_id);
+            data.append("product", product_id);
             data.append("quantity", quantity);
-            ajax("POST", "/ajax/cart/add/", data, onAddSuccess);
+            data.append("csrfmiddlewaretoken", getCookie('csrftoken'));
+            ajax("POST", "/ajax/carts/add/", data, onAddSuccess);
         }
     });
 });

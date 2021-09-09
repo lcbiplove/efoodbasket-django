@@ -169,7 +169,7 @@
                                                 {% endif %}
                                             </div>
                                             {% endif %}
-                                            {% if similar_product.isAvailable and not is_trader and not is_admin %}
+                                            {% if similar_product.availability and not user.is_trader and not user.is_admin %}
                                                 <div class="add-to-cart card-cart" data-product-id="{{ similar_product.id }}" data-quantity="1"
                                                 {% if not user %}
                                                 data-price="{{ similar_product.price }}"

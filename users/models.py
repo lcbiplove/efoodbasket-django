@@ -4,7 +4,6 @@ from random import randint
 from django.utils import timezone
 from django.forms import ModelForm
 
-
 class UserManager(BaseUserManager):
     def create_user(
             self, email, fullname,
@@ -126,6 +125,12 @@ class User(AbstractBaseUser):
     @property
     def can_login(self):
         return self.is_active == True
+
+    @property
+    def cart_count(self):
+        from django.apps import apps
+        Cart = apps.get_model('carts.Cart')
+        return Cart.get_carts_count(user=self)
 
 
 class Trader(models.Model):
