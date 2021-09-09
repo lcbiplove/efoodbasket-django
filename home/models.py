@@ -13,6 +13,9 @@ class Notification(models.Model):
     is_seen = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
 
+    class Meta:
+        ordering = ['-notified_date',]
+
     def __str__(self):
         return self.title
 

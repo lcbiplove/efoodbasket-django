@@ -286,7 +286,6 @@ class ForgotPasswordView(UserNotRequired, View):
             'errors': errors
         })
 
-
 class ManageAccountView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):

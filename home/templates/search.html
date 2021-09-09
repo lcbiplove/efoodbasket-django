@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load product_extras %}
 
 {% block title %}Search{% endblock %}
 
@@ -127,8 +128,9 @@
                                     <div class="card-big-links">
                                         {% if not user.is_trader and not user.is_admin %}
                                             {% if user.is_authenticated %}
-                                            <span class="card-cart wishlist-button {% if product.isInWishList %}active{% endif %}" data-product-id="{{ product.id }}">
-                                                {% if product.isInWishList %}
+                                            {% is_in_wish_list product.id  as is_in_wish_list %}
+                                            <span class="card-cart wishlist-button {% if is_in_wish_list %}active{% endif %}" data-product-id="{{ product.id }}">
+                                                {% if is_in_wish_list %}
                                                     <span class='iconify' data-icon='bi:heart-fill' data-inline='false'></span>
                                                 {% else %}
                                                     <span class='iconify' data-icon='el:heart-empty' data-inline='false'></span>
@@ -171,6 +173,7 @@
 {% endblock %}
 
 {% block scripts %}
+    <script src="{% static 'js/wishlist.js' %}"></script>
     <script src="{% static 'js/omni-slider.min.js' %}"></script>
     <script src="{% static 'js/main-search.js' %}"></script>
     {% if user.is_authenticated %}

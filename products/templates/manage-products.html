@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load product_extras %}
 
 {% block title %}{% if is_visitor_owner %}Manage Products{% else %}Products{% endif %} | efoodbasket{% endblock %}
 
@@ -136,9 +137,11 @@
                                     {% endif %}
                                 
                                     {% if not user.is_trader and not user.is_admin %}
-                                        {% if is_authenticated %}
-                                        <span class="card-cart wishlist-button {% if product.isInWishList %}active{% endif %}" data-product-id="{{ product.PRODUCT_ID }}">
-                                            {% if product.isInWishList %}
+                                        {% if user.is_authenticated %}
+                                        {% is_in_wish_list product.id as is_in_wish_list %}
+
+                                        <span class="card-cart wishlist-button {% if is_in_wish_list %}active{% endif %}" data-product-id="{{ product.id }}">
+                                            {% if is_in_wish_list %}
                                                 <span class='iconify' data-icon='bi:heart-fill' data-inline='false'></span>
                                             {% else %}
                                                 <span class='iconify' data-icon='el:heart-empty' data-inline='false'></span>
@@ -146,7 +149,7 @@
                                         </span>
                                         {% endif %}
                                         <span class="card-cart add-to-cart" data-product-id="{{ product.id }}" data-quantity="1" 
-                                        {% if not is_authenticated %}
+                                        {% if not user.is_authenticated %}
                                         data-price="{{ product.price }}"
                                         data-image="{{ product.thumbnail_url }}"
                                         data-discount="{{ product.discount }}"
@@ -167,13 +170,13 @@
                 </div>
             </div>
         </div>
-        {% if products %}
-        <div class="more-btn-wrapper">
-            <a id="more-item-btn" href="{{page}}" class="more-btn">
-                <span>More Products</span>
-                <span class="iconify" data-icon="ant-design:caret-down-outlined" data-inline="false"></span>
-            </a>
-        </div>
+        {% if page_obj.has_next %}
+            <div class="more-btn-wrapper">
+                <a href="?page={{ page_obj.next_page_number }}" class="more-btn">
+                    <span>More Products</span>
+                    <span class="iconify" data-icon="ant-design:caret-down-outlined" data-inline="false"></span>
+                </a>
+            </div>
         {% endif %}
     </div>
 </div>
