@@ -15,19 +15,17 @@ window.addEventListener("load", function(){
 
                 var data = JSON.parse(response);
 
-                if(data.code == 409) {
-                    window.location.href = redirectTo;
-                }
-                if(data.code == 200){
+                if(data.success == "ok"){
                     item.classList.remove("notif-not-seen");
                     unseenElem.innerHTML = unseenElem.innerHTML - 1;
-                    window.location.href = redirectTo;
-                }
+                } 
+                window.location.href = redirectTo;
             }
 
             var action = "/ajax/notifications/" + notifId + "/make-seen/";
             var data = new FormData();
             data.append("id", notifId);
+            data.append("csrfmiddlewaretoken", getCookie('csrftoken'));
             ajax("POST", action, data, onSuccess);
         }
     });

@@ -114,15 +114,9 @@
                                     </div>
                                     <div class="card-big-links">
                                         {% if not user.is_trader and not user.is_admin %}
-                                            {% if user.is_authenticated %}
-                                            <span class="card-cart wishlist-button {% if product.isInWishList %}active{% endif %}" data-product-id="{{ product.id }}">
-                                                {% if product.isInWishList %}
-                                                    <span class='iconify' data-icon='bi:heart-fill' data-inline='false'></span>
-                                                {% else %}
-                                                    <span class='iconify' data-icon='el:heart-empty' data-inline='false'></span>
-                                                {% endif %}
+                                            <span class="card-cart wishlist-button active" data-product-id="{{ product.id }}">
+                                                <span class='iconify' data-icon='bi:heart-fill' data-inline='false'></span>
                                             </span>
-                                            {% endif %}
                                             <span class="card-cart add-to-cart" data-product-id="{{ product.id }}" data-quantity="1" 
                                             {% if not is_authenticated %}
                                             data-price="{{ product.price }}"

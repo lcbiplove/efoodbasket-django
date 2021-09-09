@@ -85,12 +85,12 @@
                             <span class="iconify" data-icon="ic:baseline-manage-search" data-inline="false"></span>
                             <span>Manage Products</span>
                         </a>
-                        {% elif is_customer %}
+                        {% elif user.is_customer %}
                         <a href="/orders/">
                             <span class="iconify" data-icon="la:box" data-inline="false"></span>
                             <span>Orders</span>
                         </a>
-                        <a href="/wishlists/">
+                        <a href="{% url 'wishlist_list' %}">
                             <span class="iconify" data-icon="el:heart-empty" data-inline="false"></span>
                             <span>Wishlist</span>
                         </a>
@@ -98,7 +98,7 @@
                         
                         <a href="/notifications/">
                             <span class="link-icon-count-wrapper">
-                                <span class="link-icon-count"> {% if notif_count > 9 %}9+{% else %}{{notif_count}}{% endif %} </span>
+                                <span class="link-icon-count"> {% if notification_count > 9 %}9+{% else %}{{notification_count}}{% endif %} </span>
                                 <span class="iconify" data-icon="bi:bell" data-inline="false"></span>
                             </span>
                             <span>Notifications</span>
@@ -202,16 +202,16 @@
                     <a class="menu-link" href="/notifications/">
                         <span>Notifications</span>
                         <span class="link-icon-count-wrapper">
-                            <span class="link-icon-count" style="right: -12px;"> {% if notif_count > 9 %}9+{% else %}{{notif_count}}{% endif %} </span>
+                            <span class="link-icon-count" style="right: -12px;"> {% if notification_count > 9 %}9+{% else %}{{notification_count}}{% endif %} </span>
                             <span class="iconify menu-link-icon" data-icon="bi:bell" data-inline="false"></span>
                         </span>
                     </a>
-                    {% if is_customer %}
+                    {% if user.is_customer %}
                     <a class="menu-link" href="/orders/">
                         <span>Orders</span>
                         <span class="iconify menu-link-icon" data-icon="la:box" data-inline="false"></span>
                     </a>
-                    <a class="menu-link" href="/wishlists/">
+                    <a class="menu-link" href="{% url 'wishlist_list' %}">
                         <span>Wishlist</span>
                         <span class="iconify menu-link-icon" data-icon="el:heart-empty" data-inline="false"></span>
                     </a>

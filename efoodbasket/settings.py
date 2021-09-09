@@ -78,6 +78,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'efoodbasket.global.categories',
+                'efoodbasket.global.notification_count',
             ],
         },
     },

@@ -1,6 +1,11 @@
-from products.models import Product, ProductImage, Rating
+from django.http import request
+from django.views.generic.edit import UpdateView
+from .models import Notification
+from products.models import Product
 from django.views.generic import ListView
-from django.db.models import Avg, Prefetch
+from django.db.models import Avg
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http.response import JsonResponse
 
 # Create your views here.
 class HomeView(ListView):
@@ -90,3 +95,30 @@ class SearchView(ListView):
             },
         ]
         return my_list
+
+class NotificationListView(LoginRequiredMixin, ListView):
+    model = Notification
+    template_name = 'notifications.html'
+    context_object_name = 'notifications'
+
+    def get_queryset(self):
+        return self.model.objects.filter(user__id=self.request.user.id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['unseen_count'] = Notification.user_unseen_count(user=self.request.user)
+        return context
+
+class NotificationUpdateView(UpdateView):
+    model = Notification
+    fields = ['is_seen']
+    http_method_names = ['post']
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        self.object.is_seen = True
+        self.object.save()
+        return JsonResponse({'success': 'ok'})
+
+    def form_invalid(self, form):
+        return JsonResponse({'error': form.errors})

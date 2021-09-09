@@ -15,6 +15,7 @@ from django.urls import reverse
 from django.middleware.csrf import get_token
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
+from efoodbasket import notifications
 
 class LoginView(UserNotRequired, View):
 
@@ -31,8 +32,6 @@ class LoginView(UserNotRequired, View):
     def post(self, request,*args, **kwargs):
         email = request.POST['email']
         password = request.POST['password']
-
-        print(self.next)
 
         user = authenticate(request, email=email, password=password)
 
@@ -195,6 +194,7 @@ class VerifyEmailView(UserNotRequired, View):
             messages.add_message(request, messages.INFO, 'Your email is verified successfully. You will be notified once your documents are reviewed.', 'info')
             emails.send_trader_request_to_admin(user)
         else:
+            notifications.notify_welcome_user(user)
             login(request, user)
             messages.add_message(request, messages.SUCCESS, 'Account verified successfully.', 'success')
 
@@ -219,6 +219,8 @@ class TraderRequestsDetailView(AdminPermission, DetailView):
             token = token_generator.make_token(user)
             uidb64 = urlsafe_base64_encode(force_bytes(user.id))
             emails.send_trader_accepted(user, token, uidb64)
+            notifications.notify_welcome_trader(user)
+            notifications.notify_dashboard_pw(user)
         
         return redirect('/admin/')
 

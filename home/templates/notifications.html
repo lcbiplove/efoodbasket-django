@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block titleLinks %}
+    <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+{% endblock %}
+
+{% block main %}
+
+<div class="notification-wrapper">
+    <div class="notif-title-wrapper">
+        <div class="notif-title">Notifications</div>
+        <div >Unseen(<span id="unseen-count">{{ unseen_count }}</span>)</div>
+    </div>
+    <div class="notifications-container">
+        {% for notification in notifications %}
+            <a href="{{ notification.main_link }}" data-notif-id="{{ notification.id }}" class="notif-row {% if not notification.is_seen %}notif-not-seen{% endif %} {% if not notification.is_not_link %}notif-not-link{% endif %}" >
+                <div class="notif-img-wrapper">
+                    <img class="notif-img" src="{{ notification.image_link }}" alt="img">
+                </div>
+                <div class="notif-body-wrapper">
+                    <div class="notif-body-ttl">{{ notification.title }}</div>
+                    <div class="notif-text">
+                        {{ notification.body|safe }}
+                    </div>
+                    <div class="notif-text notif-footer">
+                        <span class="notif-by">{{notification.sender_text}}</span>
+                        <span class="notif-date">{{notification.notified_date|timesince}}</span>
+                    </div>
+                </div>
+            </a>
+        {% empty %}
+            <div class="no-notif">No notifications found</div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts%}
+    <script src="{% static 'js/notification.js' %}"></script>
+{% endblock %}

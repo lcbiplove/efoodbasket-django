@@ -1,3 +1,4 @@
+from efoodbasket import notifications
 from users.models import Trader
 from django.core.checks import messages
 from django.http.response import JsonResponse
@@ -177,6 +178,7 @@ class QueryCreateView(CustomerRequired, CreateView):
         self.object.user = self.request.user
         self.object.product = Product.objects.get(pk=self.kwargs['pk'])
         self.object.save()
+        notifications.notify_question(query=self.object)
         payload = self.get_response_data()
         return JsonResponse(payload)
 
@@ -217,6 +219,7 @@ class AnswerUpdateView(AnswerOwnerRequired, UpdateView):
         self.object = form.save(commit=False)
         self.object.answer_date = timezone.now()
         self.object.save()
+        notifications.notif_answer(query=self.object)
         payload = self.get_response_data()
         return JsonResponse(payload)
 

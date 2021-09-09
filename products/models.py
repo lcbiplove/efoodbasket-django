@@ -9,8 +9,6 @@ from django.db.models import F, Avg, Count
 from django.db.models.functions import Round, Coalesce
 from operator import itemgetter, mod
 
-import products
-
 class Shop(models.Model):
     name = models.CharField(max_length=40, validators=[validators.validate_shop_name])               
     address = models.CharField(max_length=40, validators=[validators.validate_address])     
