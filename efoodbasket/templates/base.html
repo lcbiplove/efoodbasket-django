@@ -16,6 +16,7 @@
     {% endif %}
 </head>
 <body>
+    {% with user_cart_count=user.cart_count  %}
     <header>
         <nav>
             <div id="menu" class="menu">
@@ -124,10 +125,10 @@
                         <span>Trader</span>
                     </div>
                 {% else %}
-                    <a href="/cart/" class="cart-account-item">
+                    <a href="{% url 'cart_list' %}" class="cart-account-item">
                         <span class="cart-icon-wrapper">
                             <span class="iconify" data-icon="bx:bx-basket" data-inline="false"></span>
-                            <span class="cart-count main-cart-count">{{ user.cart_count }}</span>
+                            <span class="cart-count main-cart-count">{{ user_cart_count }}</span>
                         </span>
                         <span class="cart-icon-title">Cart</span>
                     </a>
@@ -150,10 +151,10 @@
                         <span class="cart-icon-title">Trader</span>
                     </div>
                 {% else %}
-                    <a href="/cart/" class="cart-account-item  ml-5">
+                    <a href="{% url 'cart_list' %}" class="cart-account-item  ml-5">
                         <span class="cart-icon-wrapper">
                             <span class="iconify" data-icon="bx:bx-basket" data-inline="false"></span>
-                            <span class="cart-count main-cart-count">{{ user.cart_count }}</span>
+                            <span class="cart-count main-cart-count">{{ user_cart_count }}</span>
                         </span>
                     </a>
                 {% endif %}
@@ -241,6 +242,7 @@
         
         {% block main %}{% endblock %}
     </main>
+    {% endwith %}
 
     <footer>
         <div class="footer-wrapper max-width-wrapper">

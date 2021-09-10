@@ -1,4 +1,4 @@
-var MAX_QUANTITY_VALUE = 20;
+var MAX_QUANTITY_VALUE = 40;
 
 /**
  * Check for each buttons and disable them if necessary
