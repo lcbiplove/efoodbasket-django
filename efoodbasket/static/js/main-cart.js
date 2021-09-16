@@ -273,7 +273,6 @@ window.addEventListener("load", function () {
     data.append("code", inpt.value);
     data.append("csrfmiddlewaretoken", getCookie('csrftoken'));
     ajax("POST", "/ajax/vouchers/check/", data, function (response) {
-      console.log(response);
       var result = JSON.parse(response);
       inpt.value = "";
       showJsMessage(result.message, result.type);
@@ -453,7 +452,7 @@ window.addEventListener("load", function () {
       var zero = places - num.toString().length + 1;
       return Array(+(zero > 0 && zero)).join("0") + num;
     }
-    billContainer.innerHTML = "#"+zeroPad(result.order.ORDER_ID, 10);
+    billContainer.innerHTML = "#"+zeroPad(result.order_id, 10);
 
     orderItems.forEach(function (item) {
       var price = +item.price;
@@ -525,8 +524,9 @@ window.addEventListener("load", function () {
           sendData.append('collection_date', collection_date);
           sendData.append('collection_slot_id', collection_slot_id);
           sendData.append('voucher_id', voucherId);
+          sendData.append("csrfmiddlewaretoken", getCookie('csrftoken'));
 
-          ajax("POST", "/ajax/cart/payment/", sendData, onPaymentSuccess);
+          ajax("POST", "/ajax/order/place/", sendData, onPaymentSuccess);
         });
 
       },

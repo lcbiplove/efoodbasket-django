@@ -55,3 +55,23 @@ def notif_answer(query):
         main_link=reverse('product_detail', kwargs={'pk': query.product.id}) + f"?is_notif=true&query_id={query.id}",
         user=user
     )
+
+def notif_order_placed_customer(cartItemsCount, order, user, collection_date):
+    Notification.objects.create(
+        title='Order Placed',
+        body=f"Your order of {cartItemsCount} "+ (cartItemsCount > 1 and "items" or "item") + f" is placed. You will be able to collect them from collection slot after {collection_date}.",
+        image_link=static('images/notif-order.png'),
+        sender_text='From efoodbasket',
+        main_link=reverse('order_detail', kwargs={'pk': order.id}),
+        user=user
+    )
+
+def notif_order_placed_trader(orderProduct):
+    Notification.objects.create(
+        title='Order Received',
+        body="Customer has ordered {orderProduct.quantity} "+ (orderProduct.quantity > 1 and "items" or "item") +" of "+orderProduct.product.name+" from your shop.",
+        image_link=static('images/notif-order.png'),
+        sender_text='From efoodbasket',
+        main_link=reverse('product_detail', kwargs={'pk': orderProduct.product.id}),
+        user=orderProduct.product.shop.trader.user
+    )

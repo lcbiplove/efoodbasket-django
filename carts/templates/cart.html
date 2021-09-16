@@ -197,7 +197,7 @@
                         data-collection-day="{{day.grouper}}" 
                         data-available-slot="{% for slot in day.list %}{% if forloop.last %}{{slot.id}}{% else %}{{slot.id|stringformat:'i'|add:','}}{% endif %}{% endfor %}"
                         data-slot-display="{% for slot in day.list %}{% if forloop.last %}{{slot.shift}}{% else %}{{slot.shift|add:','}}{% endif %}{% endfor %}"
-                        data-collection-date="{{day.grouper|get_this_week_by_day}}"
+                        data-collection-date="{{day.grouper|get_this_week_by_day|date:"Y-m-d"}}"
                       >
                         <div class="slot-key">
                           <span
@@ -216,7 +216,7 @@
                         data-collection-day="NEXT {{day.grouper}}"
                         data-available-slot="{% for slot in day.list %}{% if forloop.last %}{{slot.id}}{% else %}{{slot.id|stringformat:'i'|add:','}}{% endif %}{% endfor %}"
                         data-slot-display="{% for slot in day.list %}{% if forloop.last %}{{slot.shift}}{% else %}{{slot.shift|add:','}}{% endif %}{% endfor %}"
-                        data-collection-date="{{day.grouper|get_next_week_by_day}}"
+                        data-collection-date="{{day.grouper|get_next_week_by_day|date:"Y-m-d"}}"
                       >
                         <div class="slot-key">
                           <span

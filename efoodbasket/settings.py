@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'home.apps.HomeConfig',
     'products.apps.ProductsConfig',
     'carts.apps.CartsConfig',
+    'orders.apps.OrdersConfig',
 
     # TODO: DEBUG
     'debug_toolbar',
