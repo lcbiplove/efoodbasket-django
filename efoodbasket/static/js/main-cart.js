@@ -271,16 +271,18 @@ window.addEventListener("load", function () {
     
     var data = new FormData();
     data.append("code", inpt.value);
-    ajax("POST", "/ajax/cart/voucher/", data, function (response) {
+    data.append("csrfmiddlewaretoken", getCookie('csrftoken'));
+    ajax("POST", "/ajax/vouchers/check/", data, function (response) {
+      console.log(response);
       var result = JSON.parse(response);
       inpt.value = "";
       showJsMessage(result.message, result.type);
 
       if(result.type == "success") {
-        discount = +result.data.DISCOUNT;
-        voucherId = +result.data.VOUCHER_ID;
-        voucherCode = result.data.CODE;
-        discountElement.innerHTML = result.data.DISCOUNT + "%";
+        discount = +result.data.discount;
+        voucherId = +result.data.id;
+        voucherCode = result.data.code;
+        discountElement.innerHTML = result.data.discount + "%";
 
         updateAllElems();
       } 

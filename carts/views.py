@@ -1,8 +1,27 @@
-from django.db.models.aggregates import Count
-from django.views.generic import ListView, CreateView
+from django.views.generic import View, ListView, CreateView
 from django.http.response import JsonResponse
+from django.forms.models import model_to_dict
 from django.db.models import F
-from .models import Cart, CollectionSlot
+from django.views.generic.base import View
+from .models import Cart, CollectionSlot, Voucher
+
+
+class VoucherCheckView(View):
+    def post(self, request, *args, **kwargs):
+        code = request.POST.get('code')
+        response = {
+            'message': 'Invalid voucher code.',
+            'type': 'fail',
+        }
+        qs = Voucher.objects.filter(code=code)
+        
+        if qs.exists():
+            response['message'] = 'Voucher code "{}" applied.'.format(code)
+            response['type'] = 'success'            
+            response['data'] = model_to_dict(qs.first())
+        
+        return JsonResponse(response)
+
 
 class CartListView(ListView):
     model = Cart
@@ -15,8 +34,6 @@ class CartListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['collection_slots'] = CollectionSlot.objects.all()
-        # context['collection_days'] = CollectionSlot.objects.values('day') \
-        #                                                     .annotate(day_count=Count('day'))
         return context
     
 class CartCreateView(CreateView):

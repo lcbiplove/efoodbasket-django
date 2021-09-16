@@ -24,162 +24,6 @@
       </div>
     </div>
     <div id="cart-wrapper" class="cart-items-summary-outer-wrapper">
-    <div id="collection-slot" class="cart-items-summary-wrapper">
-        <div class="cart-items-summary-container">
-          <div class="cart-items-container">
-            <div class="collection-card-wrapper">
-              <div class="slot-header">Slot and Day</div>
-              <div class="collection-container">
-                <div class="collection-row">
-                  <div class="collection-title-wrapper">
-                    <div class="collection-title-key">
-                      <span
-                        class="iconify"
-                        data-icon="bi:calendar-week"
-                        data-inline="false"
-                      ></span>
-                      Collection Day
-                    </div>
-                  </div>
-                  <div>
-                    <div class="next-week-div">This week</div>
-                    {% regroup collection_slots by day as collection_days %}
-                    {% for day in collection_days %}
-                      {% comment %} {% define '' as available_slots %}
-                      {% define '' as slots_display %} 
-                    {% assign var='' %}
-
-                    {% for slot in day.list %}
-                        {% assign var=slot.shift|add:',' %}
-                    {% endfor %} {% endcomment %}
-                      <div
-                        class="slot-item each-collection-day"
-                        data-collection-day="{{day.grouper}}" 
-                        data-available-slot="{% for slot in day.list %}{% if forloop.last %}{{slot.id}}{% else %}{{slot.id|stringformat:'i'|add:','}}{% endif %}{% endfor %}"
-                        data-slot-display="{% for slot in day.list %}{% if forloop.last %}{{slot.shift}}{% else %}{{slot.shift|add:','}}{% endif %}{% endfor %}"
-                        data-collection-date="{{day.getDate}}"
-                      >
-                        <div class="slot-key">
-                          <span
-                            class="iconify"
-                            data-icon="gridicons:product"
-                            data-inline="false"
-                          ></span>
-                          <span>{{day.grouper|title}} ({{day.getDate|date:"d M"}})</span>
-                        </div>
-                      </div>
-                    {% endfor %}
-                    <div class="next-week-div">Next week</div>
-                    {% for day in collection_days %}
-                      {% comment %} {% set available_slots = [] %}
-                      {% set slots_display = [] %}
-
-                      {% for slot in day.slots %}
-                        {% if not slot.isNextSlotClosed() %}
-                          {% set available_slots = available_slots|merge([slot.COLLECTION_SLOT_ID]) %}
-                          {% set slots_display = slots_display|merge([slot.SHIFT]) %}
-                        {% endif %}
-                      {% endfor %} {% endcomment %}
-                      <div
-                        class="slot-item each-collection-day {% if slots_display|length == 0 %}disabled{% endif %}"
-                        data-collection-day="NEXT {{day.DAY}}"
-                        data-available-slot="{{available_slots|join:','}}"
-                        data-slot-display="{{slots_display|join:','}}"
-                        data-collection-date="{{day.getNextDate}}"
-                      >
-                        <div class="slot-key">
-                          <span
-                            class="iconify"
-                            data-icon="gridicons:product"
-                            data-inline="false"
-                          ></span>
-                          <span>{{day.DAY}} ({{day.getNextDate|date:"d M"}})</span>
-                        </div>
-                      </div>
-                    {% endfor %}
-
-                  </div>
-                  <div
-                    id="collection-slot-container"
-                    class="collection-slot-container"
-                  ></div>
-                </div>
-              </div>
-              <div id="back-collection" class="back-btn">
-                <span
-                  class="iconify"
-                  data-icon="ic:sharp-arrow-back-ios-new"
-                  data-inline="false"
-                ></span>
-                Back
-              </div>
-            </div>
-          </div>
-          <div class="cart-summary-wrapper">
-            <div class="cart-summary-container">
-              <div class="cart-summary-heading">Order Summary</div>
-              <div class="cart-summary-body">
-                <div class="cart-summary-row">
-                  <div class="cart-succ-summary-value">
-                    <span
-                    style="vertical-align: top;"
-                      class="iconify collection-summary-icon"
-                      data-icon="bx:bx-user"
-                      data-inline="false"
-                    ></span>
-                    <span class="str-wrap-long">{{user.fullname}}</span>
-                  </div>
-                </div>
-                <div class="cart-summary-row">
-                  <div class="cart-succ-summary-value">
-                    <span
-                    style="vertical-align: top;"
-                      class="iconify collection-summary-icon"
-                      data-icon="eva:email-outline"
-                      data-inline="false"
-                    ></span>
-                    <span class="str-wrap-long">{{user.email}}</span>
-                  </div>
-                </div>
-                <div class="cart-summary-row">
-                  <div class="cart-succ-summary-value">
-                    <span
-                    style="vertical-align: top;"
-                      class="iconify"
-                      data-icon="akar-icons:phone"
-                      data-inline="false"
-                    ></span>
-                    <span class="str-wrap-long">{{user.beautify_contact}}</span>
-                  </div>
-                </div>
-                <div class="cart-summary-row">
-                  <div class="cart-summary-key">Collection Slot</div>
-                  <div class="cart-summary-value">
-                    <b class="summary-slot">----</b>
-                  </div>
-                </div>
-                <div class="cart-summary-row">
-                  <div class="cart-summary-key">Collection Day</div>
-                  <div class="cart-summary-value">
-                    <b class="summary-day">----</b>
-                  </div>
-                </div>
-                <div class="cart-summary-row">
-                  <div class="cart-summary-key">Total</div>
-                  <div class="cart-summary-value light-text cart-total-price">
-                    &pound;200
-                  </div>
-                </div>
-              </div>
-              <div class="card-summary-footer">
-                <button id="proceed-slot-btn" class="cart-proceed disabled">
-                  Proceed to Payment
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <div id="shopping-cart" class="cart-items-summary-wrapper">
         <div class="check-all-carts-wrapper">
@@ -320,6 +164,147 @@
               <div class="card-summary-footer">
                 <button id="proceed-btn" class="cart-proceed {% if cart.isEmpty %}disabled{% endif %}">
                   Proceed to Checkout
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="collection-slot" class="cart-items-summary-wrapper">
+        <div class="cart-items-summary-container">
+          <div class="cart-items-container">
+            <div class="collection-card-wrapper">
+              <div class="slot-header">Slot and Day</div>
+              <div class="collection-container">
+                <div class="collection-row">
+                  <div class="collection-title-wrapper">
+                    <div class="collection-title-key">
+                      <span
+                        class="iconify"
+                        data-icon="bi:calendar-week"
+                        data-inline="false"
+                      ></span>
+                      Collection Day
+                    </div>
+                  </div>
+                  <div>
+                    <div class="next-week-div">This week</div>
+                    {% regroup collection_slots by day as collection_days %}
+                    {% for day in collection_days %}
+                      <div
+                        class="slot-item each-collection-day"
+                        data-collection-day="{{day.grouper}}" 
+                        data-available-slot="{% for slot in day.list %}{% if forloop.last %}{{slot.id}}{% else %}{{slot.id|stringformat:'i'|add:','}}{% endif %}{% endfor %}"
+                        data-slot-display="{% for slot in day.list %}{% if forloop.last %}{{slot.shift}}{% else %}{{slot.shift|add:','}}{% endif %}{% endfor %}"
+                        data-collection-date="{{day.grouper|get_this_week_by_day}}"
+                      >
+                        <div class="slot-key">
+                          <span
+                            class="iconify"
+                            data-icon="gridicons:product"
+                            data-inline="false"
+                          ></span>
+                          <span>{{day.grouper|title}} ({{day.grouper|get_this_week_by_day|date:"d M"}})</span>
+                        </div>
+                      </div>
+                    {% endfor %}
+                    <div class="next-week-div">Next week</div>
+                    {% for day in collection_days %}
+                      <div
+                        class="slot-item each-collection-day"
+                        data-collection-day="NEXT {{day.grouper}}"
+                        data-available-slot="{% for slot in day.list %}{% if forloop.last %}{{slot.id}}{% else %}{{slot.id|stringformat:'i'|add:','}}{% endif %}{% endfor %}"
+                        data-slot-display="{% for slot in day.list %}{% if forloop.last %}{{slot.shift}}{% else %}{{slot.shift|add:','}}{% endif %}{% endfor %}"
+                        data-collection-date="{{day.grouper|get_next_week_by_day}}"
+                      >
+                        <div class="slot-key">
+                          <span
+                            class="iconify"
+                            data-icon="gridicons:product"
+                            data-inline="false"
+                          ></span>
+                          <span>{{day.grouper|title}} ({{day.grouper|get_next_week_by_day|date:"d M"}})</span>
+                        </div>
+                      </div>
+                    {% endfor %}
+
+                  </div>
+                  <div
+                    id="collection-slot-container"
+                    class="collection-slot-container"
+                  ></div>
+                </div>
+              </div>
+              <div id="back-collection" class="back-btn">
+                <span
+                  class="iconify"
+                  data-icon="ic:sharp-arrow-back-ios-new"
+                  data-inline="false"
+                ></span>
+                Back
+              </div>
+            </div>
+          </div>
+          <div class="cart-summary-wrapper">
+            <div class="cart-summary-container">
+              <div class="cart-summary-heading">Order Summary</div>
+              <div class="cart-summary-body">
+                <div class="cart-summary-row">
+                  <div class="cart-succ-summary-value">
+                    <span
+                    style="vertical-align: top;"
+                      class="iconify collection-summary-icon"
+                      data-icon="bx:bx-user"
+                      data-inline="false"
+                    ></span>
+                    <span class="str-wrap-long">{{user.fullname}}</span>
+                  </div>
+                </div>
+                <div class="cart-summary-row">
+                  <div class="cart-succ-summary-value">
+                    <span
+                    style="vertical-align: top;"
+                      class="iconify collection-summary-icon"
+                      data-icon="eva:email-outline"
+                      data-inline="false"
+                    ></span>
+                    <span class="str-wrap-long">{{user.email}}</span>
+                  </div>
+                </div>
+                <div class="cart-summary-row">
+                  <div class="cart-succ-summary-value">
+                    <span
+                    style="vertical-align: top;"
+                      class="iconify"
+                      data-icon="akar-icons:phone"
+                      data-inline="false"
+                    ></span>
+                    <span class="str-wrap-long">{{user.beautify_contact}}</span>
+                  </div>
+                </div>
+                <div class="cart-summary-row">
+                  <div class="cart-summary-key">Collection Slot</div>
+                  <div class="cart-summary-value">
+                    <b class="summary-slot">----</b>
+                  </div>
+                </div>
+                <div class="cart-summary-row">
+                  <div class="cart-summary-key">Collection Day</div>
+                  <div class="cart-summary-value">
+                    <b class="summary-day">----</b>
+                  </div>
+                </div>
+                <div class="cart-summary-row">
+                  <div class="cart-summary-key">Total</div>
+                  <div class="cart-summary-value light-text cart-total-price">
+                    &pound;200
+                  </div>
+                </div>
+              </div>
+              <div class="card-summary-footer">
+                <button id="proceed-slot-btn" class="cart-proceed disabled">
+                  Proceed to Payment
                 </button>
               </div>
             </div>
@@ -469,6 +454,7 @@
           </div>
         </div>
       </div>
+      
       <div id="order-success" class="cart-items-summary-wrapper">
         <div class="order-thank-you">
           <img

@@ -4,6 +4,12 @@ from products.models import Product
 from django.db.models import Sum
 
 
+class Voucher(models.Model):
+    code = models.CharField(unique=True, max_length=30)
+    discount = models.DecimalField(max_digits=5, decimal_places=2)
+    desc = models.TextField()
+    
+
 class Cart(models.Model):
     quantity = models.IntegerField()
     product = models.ForeignKey(Product, models.CASCADE)
