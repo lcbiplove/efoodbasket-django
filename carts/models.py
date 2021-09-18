@@ -11,6 +11,7 @@ class Voucher(models.Model):
     
 
 class Cart(models.Model):
+    MAX_CART_CAPACITY = 40
     quantity = models.IntegerField()
     product = models.ForeignKey(Product, models.CASCADE)
     user = models.ForeignKey(User, models.CASCADE)

@@ -154,8 +154,17 @@ window.addEventListener("load", function () {
 
   updateAllElems();
 
-  var onAddSuccess = function(response, new_quantity, index){
+  var onAddSuccess = function(response, new_quantity, index, subtract=false){
+    console.log(response);
     hideBigLoader();
+
+    if(!subtract) {
+      try {
+        result = JSON.parse(response);
+        showJsMessage(result.message, result.type);
+      } catch {}
+    }
+
     updateAllData(new_quantity, index);
 
     checkDisableBtns(new_quantity, allSubtractBtns[index], allAddBtns[index]);
@@ -167,12 +176,13 @@ window.addEventListener("load", function () {
     item.onclick = function () {
       var new_quantity = myProductData[index].quantity + 1;
       var product_id = myProductData[index].id;
-
+      showBigLoader();
       var data = new FormData();
-      data.append("product_id", product_id);
+      data.append("product", product_id);
       data.append("quantity", new_quantity);
       data.append("replace", true);
-      ajax("POST", "/ajax/cart/add/", data, function (response) {
+      data.append("csrfmiddlewaretoken", getCookie('csrftoken'));
+      ajax("POST", "/ajax/carts/add/", data, function (response) {
         onAddSuccess(response, new_quantity, index);
       });
     };
@@ -182,13 +192,14 @@ window.addEventListener("load", function () {
     item.onclick = function () {
       var new_quantity = myProductData[index].quantity - 1;
       var product_id = myProductData[index].id;
-      
+      showBigLoader();
       var data = new FormData();
-      data.append("product_id", product_id);
+      data.append("product", product_id);
       data.append("quantity", new_quantity);
       data.append("replace", true);
-      ajax("POST", "/ajax/cart/add/", data, function (response) {
-        onAddSuccess(response, new_quantity, index);
+      data.append("csrfmiddlewaretoken", getCookie('csrftoken'));
+      ajax("POST", "/ajax/carts/add/", data, function (response) {
+        onAddSuccess(response, new_quantity, index, subtract=true);
       });
     };
   });
@@ -208,11 +219,12 @@ window.addEventListener("load", function () {
     if(product_ids_array.length > 0){
       showBigLoader();
       var product_ids = product_ids_array.join();
+      console.log(product_ids);
 
       var data = new FormData();
       data.append("product_ids", product_ids);
-
-      ajax("POST", "/ajax/cart/delete-multiple/", data, function (response) {
+      data.append("csrfmiddlewaretoken", getCookie('csrftoken'));
+      ajax("POST", "/ajax/carts/delete-multiple/", data, function (response) {
         hideBigLoader();
 
         checkAllCheckbox.checked = false;
@@ -259,8 +271,8 @@ window.addEventListener("load", function () {
       var product_id = myProductData[index].id;
       
       var data = new FormData();
-      data.append("product_id", product_id);
-      ajax("POST", "/ajax/cart/delete/", data, function (response) {
+      data.append("csrfmiddlewaretoken", getCookie('csrftoken'));
+      ajax("POST", "/ajax/carts/"+product_id+"/delete/", data, function (response) {
         onEachDeleteSuccess(response, index, product_id);
       });
     };
