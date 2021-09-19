@@ -1,10 +1,11 @@
-from django.views.generic import View, ListView, CreateView, DeleteView
+from django.views.generic import View, ListView, CreateView, DeleteView, TemplateView
 from django.http.response import JsonResponse
 from django.forms.models import model_to_dict
+from django.contrib.auth.mixins import UserPassesTestMixin
+from django.shortcuts import redirect
 from django.db.models import F
-from django.views.generic.base import View
 from .models import Cart, CollectionSlot, Voucher
-from users.permissions import CustomerRequired
+from users.permissions import CustomerRequired, UserNotRequired
 
 
 class VoucherCheckView(View):
@@ -24,10 +25,16 @@ class VoucherCheckView(View):
         return JsonResponse(response)
 
 
-class CartListView(ListView):
+class CartListView(UserPassesTestMixin, ListView):
     model = Cart
     template_name = 'cart.html'
     context_object_name = 'carts'
+
+    def test_func(self) -> bool:
+        return self.request.user.is_authenticated
+
+    def handle_no_permission(self):
+        return redirect('cart_local')
 
     def get_queryset(self):
         return self.model.objects.filter(user__id=self.request.user.id).select_related('product', 'product__shop')
@@ -36,7 +43,18 @@ class CartListView(ListView):
         context = super().get_context_data(**kwargs)
         context['collection_slots'] = CollectionSlot.objects.all()
         return context
-    
+
+
+class CartLocalView(UserPassesTestMixin, TemplateView):
+    template_name = 'cart-local.html'
+
+    def test_func(self) -> bool:
+        return not self.request.user.is_authenticated
+
+    def handle_no_permission(self):
+        return redirect('cart_list')
+
+
 class CartCreateView(CreateView):
     model = Cart
     fields = ['quantity', 'product']

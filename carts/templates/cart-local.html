@@ -1,0 +1,113 @@
+{% extends 'base.html' %} 
+
+{% load static %}
+
+{% block title %}Cart | efoodbasket {% endblock %} 
+{% block titleLinks %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/cart.css' %}" />
+{% endblock %} 
+
+{% block main %}
+<div class="max-width-wrapper">
+  <div class="cart-outer-wrapper">
+    <div class="cart-progress-wrapper">
+      <div class="cart-progress-container">
+        <div id="progress-bar-shopping" class="cart-progress active">
+          Shopping Cart
+        </div>
+        <div id="progress-bar-collection" class="cart-progress">
+          Collection Slot
+        </div>
+        <div id="progress-bar-payment" class="cart-progress">Payment</div>
+        <div id="progress-bar-success" class="cart-progress">
+          Order Successful
+        </div>
+      </div>
+    </div>
+    <div id="cart-wrapper" class="cart-items-summary-outer-wrapper">
+      <div id="shopping-cart" class="cart-items-summary-wrapper">
+        <div class="check-all-carts-wrapper">
+          <div class="select-check-wrapper">
+            <label class="select-check-container">
+              Select all item(s) (<span id="cart-items-selected"></span>
+              item(s))
+              <input id="checkAllCheckbox" type="checkbox" />
+              <span class="checkmark"></span>
+            </label>
+            <div id="main-delete" class="check-all-delte-wrapper">
+              <span
+                class="iconify"
+                data-icon="fluent:delete-20-regular"
+                data-inline="false"
+              ></span>
+              <span>Delete</span>
+            </div>
+          </div>
+        </div>
+        <div class="cart-items-summary-container">
+          <div class="cart-items-container">
+            <div id="card-row" class="card-row"></div>
+          </div>
+          <div class="cart-summary-wrapper">
+            <div class="cart-summary-container">
+              <div
+                id="cart-summary"
+                class="cart-summary-heading"
+                data-cart-sub-total="200"
+                data-cart-discount="0"
+                data-cart-grand-total="200"
+              >
+                Order Summary
+              </div>
+              <div class="cart-summary-body">
+                <div class="cart-summary-row">
+                  <div class="cart-summary-key">
+                    Sub total (<span class="subtotal-items"
+                      >{{ cart.cartItemsCount }}</span
+                    >
+                    items)
+                  </div>
+                  <div id="cart-sub-total" class="cart-summary-value">
+                    &pound;{{ cart.totalPrice|floatformat:2 }}
+                  </div>
+                </div>
+                <div class="cart-summary-voucher-wrapper">
+                  <div>Voucher Code</div>
+                  <div
+                    class="voucher-form"
+                    style="cursor: default; pointer-events: none; opacity: 0.8"
+                  >
+                    <input type="text" id="voucher-inpt" />
+                    <button id="voucher-btn">Apply</button>
+                  </div>
+                </div>
+                <div class="cart-summary-row">
+                  <div class="cart-summary-key">Discount</div>
+                  <div id="cart-discount" class="cart-summary-value">0%</div>
+                </div>
+                <div class="cart-summary-row">
+                  <div class="cart-summary-key">Total</div>
+                  <div class="cart-summary-value light-text cart-total-price">
+                    &pound;{{ cart.totalPrice|floatformat:2 }}
+                  </div>
+                </div>
+              </div>
+              <div class="card-summary-footer">
+                <a href="{% url 'login' %}?next=/cart/"
+                  class="cart-proceed"
+                >
+                  Proceed to Checkout
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} 
+
+{% block scripts %}
+<script src="{% static 'js/main-cart-local.js' %}"></script>
+{% endblock %}

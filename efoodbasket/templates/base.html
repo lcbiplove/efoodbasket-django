@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
     {% block titleLinks %}{% endblock %}
     <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
-    {% if not user %}
+    {% if not user.is_authenticated %}
         <script src="{% static 'js/cart-localstorage.min.js' %}"></script>
         <script src="{% static 'js/header-cart-local.js' %}"></script>
     {% endif %}

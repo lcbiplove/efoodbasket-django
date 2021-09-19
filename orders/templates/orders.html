@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Orders | efoodbasket{% endblock %}
+
+{% block titleLinks %}
+    <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+{% endblock %}
+
+{% block main %}
+
+<div class="notification-wrapper">
+    <div class="notif-title-wrapper">
+        <div class="notif-title">Orders</div>
+        <div >Total(<span id="unseen-count">{{ orders|length }}</span>)</div>
+    </div>
+    <div class="notifications-container">
+        {% for order in orders %}
+        <a href="{% url 'order_detail' order.id %}" class="notif-row" >
+            <div class="notif-img-wrapper">
+                <img class="notif-img" src="{{order.thumbnail_url}}" style="width: 100%;" width="64" height="64" alt="img">
+            </div>
+            <div class="notif-body-wrapper">
+                <div class="notif-body-ttl">#{{order.id|stringformat:".3f"}}</div>
+                <div class="order-details">
+                    <div class="order-details-item">
+                        Collection Date: {{order.collection_date}}
+                    </div>
+                    <div class="order-details-item">
+                        Collection Time: {{order.collection_slot.shift}}
+                    </div>
+                    <div class="order-details-item">
+                        Item(s): {{order.items_count}}
+                    </div>
+                    <div class="order-details-item">
+                        Total: &pound;{{order.payment.amount|floatformat:2}}
+                    </div>
+                </div>
+                <div class="notif-text notif-footer">
+                    <span class="order-date">{{order.ordered_date|timesince}}</span>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+            <div class="no-notif">No order placed yet.</div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts%}
+{% endblock %}

@@ -1,4 +1,4 @@
-from django.views.generic import View, DetailView
+from django.views.generic import View, DetailView, ListView
 from django.http.response import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Payment, Order, OrderProduct
@@ -7,8 +7,16 @@ from efoodbasket import notifications
 from django.db.models import F
 
 
+class OrderListView(ListView):
+    model = Order
+    template_name = 'orders.html'
+    context_object_name = 'orders'
+
+
 class OrderDetailView(DetailView):
-    pass
+    model = Order
+    template_name = 'order.html'
+    context_object_name = 'order'
 
 
 class PlaceOrderView(LoginRequiredMixin, View):

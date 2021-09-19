@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Order | efoodbasket
+{% endblock %}
+{% block titleLinks %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/cart.css' %}"/>
+{% endblock %}
+
+{% block main %}
+<div class="max-width-wrapper">
+	<div class="cart-outer-wrapper">
+		<div id="cart-wrapper" class="cart-items-summary-outer-wrapper">
+			<div id="order-success" class="cart-items-summary-wrapper">
+				<div class="order-success-container">
+					<div class="order-success-details-wrapper">
+						<div class="slot-header">Order Details</div>
+						<div class="order-success-details">
+							<div class="cart-summary-row">
+								<div class="cart-summary-value">
+									<span class="iconify collection-summary-icon" data-icon="bx:bx-user" data-inline="false"></span>
+									<span>{{ user.fullname }}</span>
+								</div>
+							</div>
+							<div class="cart-summary-row">
+								<div class="cart-summary-value">
+									<span class="iconify collection-summary-icon" data-icon="eva:email-outline" data-inline="false"></span>
+									<span>{{ user.email }}</span>
+								</div>
+							</div>
+							<div class="cart-summary-row">
+								<div class="cart-summary-value">
+									<span class="iconify" data-icon="akar-icons:phone" data-inline="false"></span>
+									<span>{{ user.beautify_contact }}</span>
+								</div>
+							</div>
+							<div class="cart-summary-row">
+								<div class="cart-summary-value">
+									<span class="iconify" data-icon="bx:bx-time" data-inline="false"></span>
+									<span>{{ order.collection_slot.shift }}</span>
+								</div>
+							</div>
+							<div class="cart-summary-row">
+								<div class="cart-summary-value">
+									<span class="iconify" data-icon="bi:calendar-week" data-inline="false"></span>
+									<span>{{ order.collection_slot.day|lower|title }} ({{order.collection_date|date:"d M y"}})</span>
+								</div>
+							</div>
+							<div class="cart-summary-row">
+								<div class="cart-summary-value">
+									<span class="iconify" data-icon="fluent:payment-16-filled" data-inline="false"></span>
+									<span>PayPal</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="order-success-items-wrapper">
+						<div class="slot-header">Order Items</div>
+						<div class="order-success-items-container">
+							<div class="bill-row">
+								<div>Bill Number</div>
+								<div>#{{order.id}}</div>
+							</div>
+							<div class="order-success-products-container">
+                            {% for eachOrder in order.order_product.all %}
+                                <div class="success-card-row">
+									<div class="success-img-wrapper">
+										<img class="success-prod-img" src="{{eachOrder.product.thumbnail_url}}" alt="product-img">
+									</div>
+									<div class="success-body">
+										<div class="success-body-row">
+											<div class="success-prod-title">{{eachOrder.product.name}}</div>
+											<div class="success-prod-price-quantity">{{eachOrder.quantity}} x &pound;{{eachOrder.product.price|floatformat:2}}</div>
+										</div>
+                                        
+										<div class="success-body-row">
+											<div class="light-text">
+                                                {% if eachOrder.product.discount %}
+                                                    {{eachOrder.product.discount}}% off
+                                                {% endif %}
+                                            </div>
+											    <div class="success-prod-price-quantity">= &pound;{{eachOrder.total}}</div> 
+										</div>
+										<a class="review-prod-btn"  href="{% url 'product_detail' eachOrder.product.id %}?give_review=true&order_id={{order.ORDER_ID}}">
+											Review Product
+										</a>
+									</div>
+								</div>
+                            {% endfor %}
+							</div>
+							<div class="success-prices-summary">
+								<div class="success-price-row">
+									<div>Sub totals ({{order.items_count}} item(s))</div>
+									<div>&pound;{{order.subtotal|floatformat:2}}</div>
+								</div>
+                                <div class="success-price-row">
+									<div>Voucher Code</div>
+									<div>
+                                        {% if order.voucher %}
+                                            {{order.voucher.code}}
+                                        {% else %}
+                                            -----
+                                        {% endif %}
+                                    </div>
+								</div>
+								<div class="success-price-row">
+									<div>Discount</div>
+									<div>
+                                        {% if order.voucher %}
+                                            {{order.voucher.discount}}%
+                                        {% else %}
+                                            -----
+                                        {% endif %}
+                                    </div>
+								</div>
+								<div class="success-price-row">
+									<div>Total</div>
+									<div>&pound;{{order.payment.amount|floatformat:2}}</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+

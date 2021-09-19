@@ -1,5 +1,6 @@
 from products.models import Product
 from django.db import models
+from django.db.models import Sum
 from django.contrib.auth import get_user_model
 from carts.models import Voucher, CollectionSlot
 
@@ -20,8 +21,24 @@ class Order(models.Model):
     collection_slot = models.ForeignKey(CollectionSlot, on_delete=models.CASCADE)
     voucher = models.ForeignKey(Voucher, on_delete=models.CASCADE, null=True)
 
+    def thumbnail_url(self):
+        return self.order_product.all().first().product.thumbnail_url()
+
+    def items_count(self):
+        return self.order_product.all().aggregate(total=Sum('quantity'))['total']
+
+    def subtotal(self):
+        discount = self.voucher and self.voucher.discount or 0
+        total = self.payment.amount
+        subtotal =  float(total) * 100 / (100 - float(discount))
+        return subtotal
+
 
 class OrderProduct(models.Model):
     quantity = models.IntegerField()
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_order')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_product')
+
+    def total(self):
+        total = (100 - self.product.discount) * self.product.price/100*self.quantity
+        return total
