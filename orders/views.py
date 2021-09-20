@@ -5,15 +5,21 @@ from .models import Payment, Order, OrderProduct
 from carts.models import Cart
 from efoodbasket import notifications
 from django.db.models import F
+from users.permissions import CustomerRequired
+from .permissions import OrderOwnerRequired
 
 
-class OrderListView(ListView):
+class OrderListView(CustomerRequired, ListView):
     model = Order
     template_name = 'orders.html'
     context_object_name = 'orders'
 
+    def get_queryset(self):
+        return self.model.objects.filter(payment__user__id=self.request.user.id)
+    
 
-class OrderDetailView(DetailView):
+
+class OrderDetailView(OrderOwnerRequired, DetailView):
     model = Order
     template_name = 'order.html'
     context_object_name = 'order'
