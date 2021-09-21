@@ -162,7 +162,7 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
-WEBSITE_DOMAIN = 'http://localhost:8000'
+WEBSITE_DOMAIN = os.getenv('WEBSITE_DOMAIN', 'http://localhost:8000')
 
 MEDIA_URL = '/media/'
 
