@@ -12,7 +12,7 @@ class HomeView(ListView):
     model = Product
     template_name = 'index.html'
     context_object_name = 'products'
-    paginate_by = 20
+    paginate_by = 30
 
 class SearchView(ListView):
     model = Product

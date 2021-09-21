@@ -80,7 +80,7 @@
                                             </div>
 											    <div class="success-prod-price-quantity">= &pound;{{eachOrder.total}}</div> 
 										</div>
-										<a class="review-prod-btn"  href="{% url 'product_detail' eachOrder.product.id %}?give_review=true&order_id={{order.ORDER_ID}}">
+										<a class="review-prod-btn"  href="{% url 'product_detail' eachOrder.product.id %}?give_review=true&order_id={{order.id}}">
 											Review Product
 										</a>
 									</div>

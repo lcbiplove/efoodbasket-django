@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
 from django.db.models import F, Avg, Count
 from django.db.models.functions import Round, Coalesce
-from operator import itemgetter, mod
+from operator import itemgetter
 
 class Shop(models.Model):
     name = models.CharField(max_length=40, validators=[validators.validate_shop_name])               
@@ -115,6 +115,15 @@ class Product(models.Model):
                 )
         newlist = sorted(qs_list, key=itemgetter('rate'), reverse=True) 
         return newlist
+
+    @staticmethod
+    def user_has_ordered_product(user, product):
+        import orders.models as order_models   
+        for payment in user.payment.all():
+            if order_models.OrderProduct.objects.filter(product__id=product.id, order__payment__id=payment.id).exists():
+                return True
+        return False
+
 
 class ProductImage(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_images')
